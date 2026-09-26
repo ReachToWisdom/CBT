@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>말하기 연습 노트</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--ink:#23262b;--muted:#6b7078;--line:#e3e1db;--accent:#2f7d6d;--accent-soft:#e2f1ed;--warn:#b5542f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17191c;--card:#202328;--ink:#e8e6e1;--muted:#9aa0a8;--line:#33373d;--accent:#5cc0a9;--accent-soft:#1f3a34;--warn:#e58a63}}
+:root[data-theme="dark"]{--bg:#17191c;--card:#202328;--ink:#e8e6e1;--muted:#9aa0a8;--line:#33373d;--accent:#5cc0a9;--accent-soft:#1f3a34;--warn:#e58a63}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;margin:0 0 4px}
+h2{font-size:1.15rem;margin:0 0 12px}
+p.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit}
+nav button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+label{display:block;font-size:.9rem;color:var(--muted);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:64px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.row{grid-template-columns:1fr}}
+button.primary{margin-top:14px;background:var(--accent);color:#fff;border:0;padding:10px 18px;border-radius:8px;font:inherit;cursor:pointer}
+button.ghost{background:none;border:0;color:var(--muted);cursor:pointer;font:inherit;padding:4px}
+button.ghost:hover{color:var(--warn)}
+.ladder li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ladder{list-style:none;margin:0;padding:0}
+.badge{min-width:34px;text-align:center;font-weight:600;border-radius:6px;padding:2px 6px;background:var(--accent-soft);color:var(--accent)}
+.grow{flex:1}
+.meta{font-size:.85rem;color:var(--muted)}
+.done{text-decoration:line-through;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tablewrap{overflow-x:auto}
+.empty{color:var(--muted);font-style:italic}
+.tip{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:.92rem;margin-top:10px}
+.range{display:flex;align-items:center;gap:10px}
+.range output{min-width:24px;font-weight:600;text-align:right}
+.range input{padding:0}
+svg text{fill:var(--muted);font-size:11px}
+.disclaimer{font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>말하기 연습 노트</h1>
+  <p class="sub">선택적 함묵증 자가 실행용 · 불안 사다리를 만들고, 한 단계씩 연습하고, 변화를 기록하세요.<br>기록은 이 브라우저에만 저장됩니다.</p>
+
+  <nav role="tablist">
+    <button role="tab" data-tab="ladder" aria-selected="true">① 불안 사다리</button>
+    <button role="tab" data-tab="log" aria-selected="false">② 연습 기록</button>
+    <button role="tab" data-tab="thought" aria-selected="false">③ 생각 기록</button>
+    <button role="tab" data-tab="progress" aria-selected="false">④ 진행 상황</button>
+  </nav>
+
+  <section id="tab-ladder">
+    <div class="card">
+      <h2>과제 추가</h2>
+      <label for="stepText">말하기 과제</label>
+      <input id="stepText" placeholder="예) 편의점에서 '봉투 주세요' 말하기">
+      <div class="row">
+        <div>
+          <label for="stepLevel">말하기 단계</label>
+          <select id="stepLevel">
+            <option>비언어 소통</option><option>소리 내기</option><option>녹음/비대면</option>
+            <option selected>한 단어</option><option>짧은 문장</option><option>질문/대화 시작</option>
+            <option>대화 이어가기</option><option>여러 사람 앞</option>
+          </select>
+        </div>
+        <div>
+          <label for="stepSuds">예상 불안 (0–10)</label>
+          <div class="range"><input id="stepSuds" type="range" min="0" max="10" value="5"><output id="stepSudsOut">5</output></div>
+        </div>
+      </div>
+      <button class="primary" id="addStep">사다리에 추가</button>
+      <div class="tip">예상 불안 <b>3~5</b>인 과제부터 시작하고, 같은 과제를 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 다음 단계로 올라가세요.</div>
+    </div>
+    <div class="card">
+      <h2>나의 사다리 <span class="meta">(쉬운 것 → 어려운 것)</span></h2>
+      <ul class="ladder" id="ladderList"></ul>
+    </div>
+  </section>
+
+  <section id="tab-log" hidden>
+    <div class="card">
+      <h2>연습 기록하기</h2>
+      <label for="logStep">연습한 과제</label>
+      <select id="logStep"></select>
+      <label for="logPredict">연습 전 걱정/예측</label>
+      <textarea id="logPredict" placeholder="예) 목소리가 떨려서 점원이 이상하게 볼 것이다"></textarea>
+      <div class="row">
+        <div>
+          <label for="logBefore">연습 전 불안</label>
+          <div class="range"><input id="logBefore" type="range" min="0" max="10" value="6"><output id="logBeforeOut">6</output></div>
+        </div>
+        <div>
+          <label for="logAfter">연습 후 불안</label>
+          <div class="range"><input id="logAfter" type="range" min="0" max="10" value="4"><output id="logAfterOut">4</output></div>
+        </div>
+      </div>
+      <label for="logResult">결과</label>
+      <select id="logResult">
+        <option value="full">완전히 해냈다</option>
+        <option value="partial">일부 해냈다 (속삭임, 한 단어 등)</option>
+        <option value="none">이번엔 못 했다 → 더 작게 나눠 보기</option>
+      </select>
+      <label for="logReflect">실제로 일어난 일 / 배운 점</label>
+      <textarea id="logReflect" placeholder="예) 점원은 아무렇지 않게 봉투를 줬다. 걱정한 일은 일어나지 않았다."></textarea>
+      <label for="logReward">나에게 주는 보상</label>
+      <input id="logReward" placeholder="예) 좋아하는 음료 한 잔">
+      <button class="primary" id="addLog">기록 저장</button>
+    </div>
+    <div class="card">
+      <h2>최근 기록</h2>
+      <div class="tablewrap"><table><thead><tr><th>날짜</th><th>과제</th><th>불안 전→후</th><th>결과</th><th>배운 점</th><th></th></tr></thead><tbody id="logTable"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="tab-thought" hidden>
+    <div class="card">
+      <h2>생각 기록 (인지 재구성)</h2>
+      <label for="thSituation">상황</label>
+      <input id="thSituation" placeholder="예) 회의에서 의견을 물어봄">
+      <label for="thAuto">자동적 사고</label>
+      <textarea id="thAuto" placeholder="예) 이제 와서 말하면 다들 놀라서 쳐다볼 거야"></textarea>
+      <label for="thTrap">생각의 함정</label>
+      <select id="thTrap">
+        <option>독심술</option><option>파국화</option><option>스포트라이트 효과</option>
+        <option>"이제 와서 말하면 이상할 거야"</option><option>흑백논리</option><option>기타</option>
+      </select>
+      <div class="row">
+        <div><label for="thFor">그 생각을 지지하는 증거</label><textarea id="thFor"></textarea></div>
+        <div><label for="thAgainst">반대 증거</label><textarea id="thAgainst"></textarea></div>
+      </div>
+      <label for="thBalanced">균형 잡힌 생각</label>
+      <textarea id="thBalanced" placeholder="예) 잠깐 놀랄 수 있지만 금방 잊는다. 불편해도 견딜 수 있다."></textarea>
+      <button class="primary" id="addThought">저장</button>
+    </div>
+    <div class="card"><h2>저장된 생각 기록</h2><div id="thoughtList"></div></div>
+  </section>
+
+  <section id="tab-progress" hidden>
+    <div class="card">
+      <h2>불안 변화</h2>
+      <div id="chart"></div>
+      <p class="meta" id="summary"></p>
+    </div>
+    <div class="card">
+      <h2>데이터 관리</h2>
+      <button class="primary" id="exportBtn">JSON으로 내보내기</button>
+      <label for="importFile">가져오기</label>
+      <input type="file" id="importFile" accept="application/json">
+    </div>
+    <p class="disclaimer">이 도구는 자가 연습 보조용이며 전문 치료를 대체하지 않습니다. 4~6주 연습해도 진전이 없거나, 일상에 큰 지장·우울·자해 생각이 있다면 전문가의 도움을 받으세요. (자살예방상담전화 109, 정신건강위기상담 1577-0199)</p>
+  </section>
+</main>
+
+<script>
+const KEY = 'sm-practice-v1';
+let state = { steps: [], logs: [], thoughts: [] };
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) state = Object.assign(state, s); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+const $ = id => document.getElementById(id);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => new Date().toISOString().slice(0, 10);
+
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.setAttribute('aria-selected', x === b));
+  document.querySelectorAll('main > section').forEach(s => s.hidden = s.id !== 'tab-' + b.dataset.tab);
+  if (b.dataset.tab === 'progress') renderChart();
+});
+['stepSuds', 'logBefore', 'logAfter'].forEach(id => {
+  $(id).oninput = () => $(id + 'Out').textContent = $(id).value;
+});
+
+function logsFor(stepId) { return state.logs.filter(l => l.stepId === stepId); }
+function isMastered(step) {
+  const ls = logsFor(step.id).filter(l => l.result !== 'none');
+  if (ls.length < 3) return false;
+  const first = ls[ls.length - 1].before;  // logs are stored newest first
+  return ls[0].before <= Math.max(1, first / 2);
+}
+
+function renderLadder() {
+  const steps = [...state.steps].sort((a, b) => a.suds - b.suds);
+  const next = steps.find(s => !isMastered(s));
+  $('ladderList').innerHTML = steps.length ? steps.map(s => {
+    const n = logsFor(s.id).length, m = isMastered(s);
+    return `<li><span class="badge">${s.suds}</span>
+      <div class="grow"><div class="${m ? 'done' : ''}">${esc(s.text)}</div>
+      <div class="meta">${esc(s.level)} · 연습 ${n}회${m ? ' · ✓ 익숙해짐' : s === next ? ' · 👉 지금 연습할 단계' : ''}</div></div>
+      <button class="ghost" data-del-step="${s.id}" aria-label="삭제">✕</button></li>`;
+  }).join('') : '<li class="empty">아직 과제가 없습니다. 위에서 10~15개 정도 추가해 보세요.</li>';
+  $('logStep').innerHTML = steps.map(s => `<option value="${s.id}" ${s === next ? 'selected' : ''}>[${s.suds}] ${esc(s.text)}</option>`).join('')
+    || '<option value="">먼저 불안 사다리에 과제를 추가하세요</option>';
+}
+$('ladderList').onclick = e => {
+  const id = e.target.dataset.delStep;
+  if (id && confirm('이 과제를 삭제할까요? (관련 연습 기록은 유지됩니다)')) {
+    state.steps = state.steps.filter(s => s.id !== id); save(); renderAll();
+  }
+};
+$('addStep').onclick = () => {
+  const text = $('stepText').value.trim();
+  if (!text) return $('stepText').focus();
+  state.steps.push({ id: uid(), text, level: $('stepLevel').value, suds: +$('stepSuds').value });
+  $('stepText').value = ''; save(); renderAll();
+};
+
+const RESULT = { full: '완전히 해냄', partial: '일부 해냄', none: '다음에 다시' };
+function stepName(id) { const s = state.steps.find(x => x.id === id); return s ? s.text : '(삭제된 과제)'; }
+function renderLogs() {
+  $('logTable').innerHTML = state.logs.length ? state.logs.slice(0, 50).map(l => `<tr>
+    <td>${esc(l.date)}</td><td>${esc(stepName(l.stepId))}</td><td>${l.before} → ${l.after}</td>
+    <td>${RESULT[l.result]}</td><td>${esc(l.reflect)}</td>
+    <td><button class="ghost" data-del-log="${l.id}" aria-label="삭제">✕</button></td></tr>`).join('')
+    : '<tr><td colspan="6" class="empty">아직 기록이 없습니다.</td></tr>';
+}
+$('logTable').onclick = e => {
+  const id = e.target.dataset.delLog;
+  if (id && confirm('이 기록을 삭제할까요?')) { state.logs = state.logs.filter(l => l.id !== id); save(); renderAll(); }
+};
+$('addLog').onclick = () => {
+  if (!$('logStep').value) return alert('먼저 불안 사다리에 과제를 추가하세요.');
+  const l = { id: uid(), date: today(), stepId: $('logStep').value, predict: $('logPredict').value.trim(),
+    before: +$('logBefore').value, after: +$('logAfter').value, result: $('logResult').value,
+    reflect: $('logReflect').value.trim(), reward: $('logReward').value.trim() };
+  state.logs.unshift(l);
+  ['logPredict', 'logReflect', 'logReward'].forEach(id => $(id).value = '');
+  save(); renderAll();
+  alert(l.result === 'none'
+    ? '시도한 것 자체가 한 걸음입니다. 과제를 더 작게 나누거나 한 단계 낮춰서 다시 해 보세요.'
+    : '잘했어요! 불안했지만 해냈습니다.' + (l.reward ? ` 약속한 보상(${l.reward})을 꼭 챙기세요.` : ''));
+};
+
+function renderThoughts() {
+  $('thoughtList').innerHTML = state.thoughts.length ? state.thoughts.map(t => `
+    <div style="border-bottom:1px solid var(--line);padding:10px 0">
+      <div class="meta">${esc(t.date)} · ${esc(t.situation)} · ${esc(t.trap)}</div>
+      <div>💭 ${esc(t.auto)}</div><div>🌱 ${esc(t.balanced)}</div>
+      <button class="ghost" data-del-th="${t.id}">삭제</button></div>`).join('')
+    : '<p class="empty">아직 기록이 없습니다.</p>';
+}
+$('thoughtList').onclick = e => {
+  const id = e.target.dataset.delTh;
+  if (id && confirm('삭제할까요?')) { state.thoughts = state.thoughts.filter(t => t.id !== id); save(); renderThoughts(); }
+};
+$('addThought').onclick = () => {
+  if (!$('thAuto').value.trim()) return $('thAuto').focus();
+  state.thoughts.unshift({ id: uid(), date: today(), situation: $('thSituation').value.trim(), auto: $('thAuto').value.trim(),
+    trap: $('thTrap').value, for: $('thFor').value.trim(), against: $('thAgainst').value.trim(), balanced: $('thBalanced').value.trim() });
+  ['thSituation', 'thAuto', 'thFor', 'thAgainst', 'thBalanced'].forEach(id => $(id).value = '');
+  save(); renderThoughts();
+};
+
+function renderChart() {
+  const logs = [...state.logs].reverse();
+  if (logs.length < 2) { $('chart').innerHTML = '<p class="empty">기록이 2개 이상 쌓이면 그래프가 표시됩니다.</p>'; $('summary').textContent = ''; return; }
+  const W = 800, H = 240, P = 30, x = i => P + i * (W - 2 * P) / (logs.length - 1), y = v => H - P - v * (H - 2 * P) / 10;
+  const line = k => logs.map((l, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(l[k]).toFixed(1)}`).join('');
+  const grid = [0, 5, 10].map(v => `<line x1="${P}" x2="${W - P}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="4" y="${y(v) + 4}">${v}</text>`).join('');
+  $('chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="연습 전후 불안 변화">${grid}
+    <path d="${line('before')}" fill="none" stroke="var(--warn)" stroke-width="2"/>
+    <path d="${line('after')}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <text x="${W - P - 150}" y="16" style="fill:var(--warn)">● 연습 전</text><text x="${W - P - 70}" y="16" style="fill:var(--accent)">● 연습 후</text></svg>`;
+  const avg = a => (a.reduce((s, v) => s + v, 0) / a.length).toFixed(1);
+  const mastered = state.steps.filter(isMastered).length;
+  $('summary').textContent = `총 ${logs.length}회 연습 · 평균 불안 ${avg(logs.map(l => l.before))} → ${avg(logs.map(l => l.after))} · 익숙해진 과제 ${mastered}/${state.steps.length}개`;
+}
+
+$('exportBtn').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }));
+  a.download = `speaking-practice-${today()}.json`; a.click();
+};
+$('importFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => {
+    const s = JSON.parse(t);
+    if (!Array.isArray(s.steps) || !Array.isArray(s.logs)) throw new Error();
+    if (confirm('현재 기록을 가져온 파일로 바꿀까요?')) { state = { steps: s.steps, logs: s.logs, thoughts: s.thoughts || [] }; save(); renderAll(); renderChart(); }
+  }).catch(() => alert('올바른 파일이 아닙니다.'));
+};
+
+function renderAll() { renderLadder(); renderLogs(); renderThoughts(); }
+renderAll();
+</script>
+</body>
+</html>

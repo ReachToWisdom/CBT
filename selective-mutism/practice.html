@@ -48,6 +48,23 @@ svg text{fill:var(--muted);font-size:11px}
 .ladder input[type=checkbox]{width:18px;height:18px;flex:none}
 .cat{font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-right:4px}
 .disclaimer{font-size:.85rem;color:var(--muted)}
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#000;font-size:10pt}
+  main{display:none}
+  #printArea{display:block}
+  #printArea h1{font-size:16pt;margin:0 0 2pt;color:#1f5f53}
+  #printArea .pmeta{display:flex;gap:16pt;margin:4pt 0 6pt}
+  #printArea .pmeta span{flex:1;border-bottom:1px solid #555}
+  #printArea p{font-size:8.5pt;color:#444;margin:0 0 6pt}
+  #printArea table{width:100%;border-collapse:collapse;font-size:9pt}
+  #printArea thead{display:table-header-group}
+  #printArea tr{break-inside:avoid}
+  #printArea th,#printArea td{border:1px solid #888;padding:4pt 5pt;text-align:left;vertical-align:middle}
+  #printArea th{background:#e2f1ed;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea td.c{text-align:center}
+}
 </style>
 </head>
 <body>
@@ -96,6 +113,7 @@ svg text{fill:var(--muted);font-size:11px}
         <button class="danger" id="deleteSel">선택 삭제 (<span id="selCount">0</span>)</button>
         <button id="restoreEx">예시 다시 넣기</button>
         <button class="danger" id="deleteAll">전체 삭제</button>
+        <button id="printLadder">🖨 사다리 인쇄</button>
       </div>
       <p class="meta" id="ladderCount"></p>
       <ul class="ladder" id="ladderList"></ul>
@@ -175,6 +193,7 @@ svg text{fill:var(--muted);font-size:11px}
     <p class="disclaimer">이 도구는 자가 연습 보조용이며 전문 치료를 대체하지 않습니다. 4~6주 연습해도 진전이 없거나, 일상에 큰 지장·우울·자해 생각이 있다면 전문가의 도움을 받으세요. (자살예방상담전화 109, 정신건강위기상담 1577-0199)</p>
   </section>
 </main>
+<div id="printArea"></div>
 
 <script>
 const KEY = 'sm-practice-v1';
@@ -442,6 +461,20 @@ $('importFile').onchange = e => {
     if (!Array.isArray(s.steps) || !Array.isArray(s.logs)) throw new Error();
     if (confirm('현재 기록을 가져온 파일로 바꿀까요?')) { state = { steps: s.steps, logs: s.logs, thoughts: s.thoughts || [], seeded: true }; save(); renderAll(); renderChart(); }
   }).catch(() => alert('올바른 파일이 아닙니다.'));
+};
+
+$('printLadder').onclick = () => {
+  const f = $('catFilter').value || '전체';
+  const steps = [...state.steps].filter(s => f === '전체' || (s.cat || '나만의 과제') === f).sort((a, b) => b.suds - a.suds);
+  if (!steps.length) return alert('인쇄할 과제가 없습니다.');
+  $('printArea').innerHTML = `<h1>나의 불안 사다리${f === '전체' ? '' : ' · ' + esc(f)}</h1>
+    <div class="pmeta"><span>이름:</span><span>인쇄일: ${today()}</span></div>
+    <p>위로 갈수록 어려운 과제입니다. <b>맨 아래(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 올라가세요. 연습할 때마다 □에 ✓ 하세요.</p>
+    <table><thead><tr><th style="width:6%">순서</th><th style="width:12%">분류</th><th>말하기 과제</th><th style="width:17%">단계</th><th style="width:8%">예상<br>불안</th><th style="width:15%">연습 (✓)</th><th style="width:7%">완료</th></tr></thead><tbody>
+    ${steps.map((s, i) => `<tr><td class="c">${steps.length - i}</td><td>${esc(s.cat || '나만의 과제')}</td><td>${esc(s.text)}</td><td>${esc(s.level)}</td>
+      <td class="c">${s.suds}</td><td>${'□ '.repeat(Math.max(0, 5 - logsFor(s.id).length)).replace(/^/, '☑ '.repeat(Math.min(5, logsFor(s.id).length)))}</td><td class="c">${isMastered(s) ? '☑' : '□'}</td></tr>`).join('')}
+    </tbody></table>`;
+  window.print();
 };
 
 function renderAll() { renderLadder(); renderLogs(); renderThoughts(); }

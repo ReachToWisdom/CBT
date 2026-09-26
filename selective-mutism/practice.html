@@ -41,6 +41,12 @@ th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertic
 .range output{min-width:24px;font-weight:600;text-align:right}
 .range input{padding:0}
 svg text{fill:var(--muted);font-size:11px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.toolbar select{width:auto}
+.toolbar button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:.9rem;cursor:pointer}
+.toolbar button.danger{color:var(--warn);border-color:var(--warn)}
+.ladder input[type=checkbox]{width:18px;height:18px;flex:none}
+.cat{font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-right:4px}
 .disclaimer{font-size:.85rem;color:var(--muted)}
 </style>
 </head>
@@ -61,6 +67,8 @@ svg text{fill:var(--muted);font-size:11px}
       <h2>과제 추가</h2>
       <label for="stepText">말하기 과제</label>
       <input id="stepText" placeholder="예) 편의점에서 '봉투 주세요' 말하기">
+      <label for="stepCat">분류</label>
+      <select id="stepCat"></select>
       <div class="row">
         <div>
           <label for="stepLevel">말하기 단계</label>
@@ -80,6 +88,16 @@ svg text{fill:var(--muted);font-size:11px}
     </div>
     <div class="card">
       <h2>나의 사다리 <span class="meta">(쉬운 것 → 어려운 것)</span></h2>
+      <p class="meta" style="margin-top:-6px">예시 과제가 미리 들어 있습니다. 나에게 맞지 않는 과제는 ✕ 또는 체크 후 [선택 삭제]로 지우고, 예상 불안 숫자는 눌러서 내 느낌에 맞게 고치세요.</p>
+      <div class="toolbar">
+        <select id="catFilter" aria-label="분류 필터"></select>
+        <button id="selectAll">보이는 항목 모두 선택</button>
+        <button id="clearSel">선택 해제</button>
+        <button class="danger" id="deleteSel">선택 삭제 (<span id="selCount">0</span>)</button>
+        <button id="restoreEx">예시 다시 넣기</button>
+        <button class="danger" id="deleteAll">전체 삭제</button>
+      </div>
+      <p class="meta" id="ladderCount"></p>
       <ul class="ladder" id="ladderList"></ul>
     </div>
   </section>
@@ -162,6 +180,115 @@ svg text{fill:var(--muted);font-size:11px}
 const KEY = 'sm-practice-v1';
 let state = { steps: [], logs: [], thoughts: [] };
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) state = Object.assign(state, s); } catch (e) {}
+/* [분류, 말하기 단계(0–7), 예상 불안, 과제] */
+const EXAMPLES = [
+['혼자/집',2,1,'혼자 방에서 내 목소리로 책 한 쪽 소리 내 읽기'],
+['혼자/집',2,1,'내 목소리를 녹음해서 다시 들어 보기'],
+['혼자/집',1,1,'혼자 있을 때 좋아하는 노래 따라 부르기'],
+['혼자/집',2,2,'거울 보며 "안녕하세요, 저는 ○○입니다" 말하기'],
+['혼자/집',2,2,'가게 주문 대본을 소리 내어 5번 연습하기'],
+['혼자/집',2,2,'음성 인식(AI 스피커·휴대폰)에 말로 질문하기'],
+['혼자/집',2,3,'녹음한 자기소개를 가족에게 들려주기'],
+['가족/편한 사람',4,1,'가족에게 오늘 있었던 일 한 가지 말하기'],
+['가족/편한 사람',4,2,'가족이 옆방에 있을 때 들리게 소리 내 책 읽기'],
+['가족/편한 사람',4,2,'가족과 보드게임하며 큰 소리로 숫자·단어 말하기'],
+['가족/편한 사람',4,3,'문을 열어 둔 채 가족과 통화하기(다른 사람이 들을 수 있게)'],
+['가족/편한 사람',4,3,'편한 친구 앞에서 평소 목소리 크기로 말하기'],
+['가족/편한 사람',4,4,'가족이 있을 때 손님(친척)에게 "안녕하세요" 인사하기'],
+['가족/편한 사람',6,4,'가족 모임에서 친척 1명과 2~3마디 주고받기'],
+['가족/편한 사람',4,5,'가족과 외출 중 가족에게 말하는 소리가 주변에 들리게 하기'],
+['비언어/소리',0,1,'가게 점원과 눈 맞추고 고개 끄덕이기'],
+['비언어/소리',0,2,'이웃에게 손 흔들어 인사하기'],
+['비언어/소리',1,2,'사람들 앞에서 웃음소리 내기'],
+['비언어/소리',1,2,'헛기침·"음" 같은 소리를 다른 사람 앞에서 내기'],
+['비언어/소리',1,3,'대답 대신 "응/음"처럼 짧은 소리로 반응하기'],
+['비언어/소리',1,3,'여럿이 함께 박수 치며 "와!" 같은 소리 내기'],
+['비언어/소리',1,3,'단체로 노래 부를 때 작게라도 따라 부르기'],
+['비대면',2,2,'친구에게 음성 이모티콘·짧은 음성 메시지 보내기'],
+['비대면',2,3,'친구에게 "안녕" 음성 메시지(5초) 보내기'],
+['비대면',2,3,'ARS 자동응답 전화에 말로 응답하기'],
+['비대면',2,3,'단체 채팅방에 음성 메시지 한 번 올리기'],
+['비대면',2,4,'카메라 끈 채 화상회의에서 "네" 한 번 말하기'],
+['비대면',2,4,'가족에게 전화 걸어 1분 통화하기(밖에서)'],
+['비대면',5,5,'가게에 전화해 영업시간 물어보기'],
+['비대면',5,5,'고객센터에 전화해 간단한 문의하기'],
+['비대면',5,6,'식당에 전화로 예약하기'],
+['비대면',4,6,'화상회의에서 카메라 켜고 한 문장 말하기'],
+['비대면',5,6,'병원에 전화해 진료 예약하기'],
+['비대면',5,7,'모르는 번호로 온 전화 받아서 용건 묻기'],
+['비대면',6,7,'배달 음식 전화 주문하기'],
+['가게/서비스',0,2,'무인 키오스크 옆에 사람 있을 때 주문하기(말 없이)'],
+['가게/서비스',3,3,'편의점에서 "네" 또는 "아니요"로 대답하기(봉투 필요하세요?)'],
+['가게/서비스',3,3,'계산 후 "감사합니다" 말하기'],
+['가게/서비스',3,4,'편의점에서 "봉투 주세요" 말하기'],
+['가게/서비스',3,4,'빵집에서 "포장이요" 말하기'],
+['가게/서비스',4,4,'카페에서 대본 카드 보면서 음료 주문하기'],
+['가게/서비스',4,5,'카페에서 대본 없이 음료 주문하기'],
+['가게/서비스',4,5,'식당에서 "물 좀 주세요" 요청하기'],
+['가게/서비스',4,5,'패스트푸드점 카운터에서 주문하기'],
+['가게/서비스',5,5,'마트 직원에게 "○○ 어디 있어요?" 묻기'],
+['가게/서비스',5,5,'약국에서 증상 말하고 약 사기'],
+['가게/서비스',4,6,'주문이 잘못 나왔을 때 "이거 ○○ 아니에요" 말하기'],
+['가게/서비스',5,6,'옷 가게에서 "다른 사이즈 있어요?" 묻기'],
+['가게/서비스',5,6,'미용실에서 원하는 머리 모양 설명하기'],
+['가게/서비스',6,6,'은행·주민센터 창구에서 용건 말하기'],
+['가게/서비스',4,7,'음식점에서 여러 명의 메뉴를 대표로 주문하기'],
+['가게/서비스',6,7,'환불·교환 요청하기'],
+['공공장소',0,2,'엘리베이터에서 이웃에게 목례하기'],
+['공공장소',3,3,'경비원·이웃에게 "안녕하세요" 인사하기'],
+['공공장소',3,4,'버스 기사님께 "안녕하세요/감사합니다" 말하기'],
+['공공장소',4,4,'엘리베이터에서 "몇 층 가세요?" 또는 "5층이요" 말하기'],
+['공공장소',4,5,'붐비는 곳에서 "잠시만요, 지나갈게요" 말하기'],
+['공공장소',5,5,'길에서 행인에게 길 묻기'],
+['공공장소',5,5,'도서관 사서에게 책 위치 묻기'],
+['공공장소',5,6,'병원 접수처에서 이름·증상 말하기'],
+['공공장소',6,6,'진료실에서 의사에게 증상 설명하고 질문 1개 하기'],
+['공공장소',4,6,'택시 기사님께 목적지 말하기'],
+['공공장소',5,7,'분실물 센터·안내 데스크에 가서 문의하기'],
+['학교',0,2,'선생님 질문에 고개로 대답하기'],
+['학교',1,3,'빈 교실에서 선생님과 둘이 게임하며 소리 내기'],
+['학교',2,3,'녹음한 책 읽기 파일을 선생님께 보내기'],
+['학교',3,4,'선생님과 단둘이 있을 때 "네/아니요" 말하기'],
+['학교',3,4,'출석 부를 때 "네" 대답하기'],
+['학교',4,5,'친한 친구 1명과 교실 구석에서 속삭이지 않고 말하기'],
+['학교',4,5,'선생님께 "화장실 다녀와도 돼요?" 말하기'],
+['학교',5,6,'모르는 문제를 선생님께 질문하기'],
+['학교',6,6,'모둠 활동에서 친구 2~3명과 의견 나누기'],
+['학교',4,7,'수업 시간에 손들고 답 한 단어 말하기'],
+['학교',4,8,'교과서 한 문단을 반 전체 앞에서 읽기'],
+['학교',7,9,'반 전체 앞에서 발표하기'],
+['직장',3,3,'출근할 때 동료에게 "안녕하세요" 인사하기'],
+['직장',3,4,'퇴근할 때 "먼저 가보겠습니다" 말하기'],
+['직장',4,4,'동료에게 업무 관련 짧은 질문을 메신저 대신 말로 하기'],
+['직장',5,5,'점심시간에 옆자리 동료에게 먼저 말 걸기'],
+['직장',6,6,'상사에게 업무 진행 상황 짧게 보고하기'],
+['직장',6,6,'동료와 탕비실에서 날씨·주말 이야기 2~3마디 나누기'],
+['직장',4,7,'회의에서 "동의합니다" 등 한 문장 말하기'],
+['직장',6,7,'업무 전화 걸어 요청 사항 전달하기'],
+['직장',5,8,'회의에서 질문 한 가지 하기'],
+['직장',6,8,'회의에서 내 의견을 1분 동안 말하기'],
+['직장',6,8,'면접 연습을 다른 사람 앞에서 해 보기'],
+['직장',7,9,'팀 앞에서 5분 발표하기'],
+['친구/사교',3,4,'아는 사람을 만났을 때 먼저 "안녕" 인사하기'],
+['친구/사교',5,5,'친구에게 전화해서 약속 잡기'],
+['친구/사교',6,5,'친한 친구와 카페에서 30분 대화하기'],
+['친구/사교',5,6,'조금 아는 사람에게 안부 묻기("잘 지냈어?")'],
+['친구/사교',6,6,'친구의 친구(처음 보는 사람)에게 자기소개하기'],
+['친구/사교',6,7,'3~4명 모임에서 한 번 이상 대화에 끼어 말하기'],
+['친구/사교',6,7,'동호회·수업에서 옆 사람과 대화 나누기'],
+['친구/사교',6,8,'모임에서 내 이야기(경험) 하나 들려주기'],
+['친구/사교',7,8,'여러 사람 앞에서 자기소개하기'],
+['친구/사교',6,8,'오래 말하지 않았던 사람에게 처음으로 말하기'],
+['친구/사교',6,9,'처음 가 본 모임에서 대화 이어가기'],
+['친구/사교',7,9,'노래방·모임에서 여러 사람 앞에서 노래하거나 건배사하기'],
+['친구/사교',7,10,'많은 사람 앞에서 즉석으로 이야기하기'],
+];
+
+const LEVELS = ['비언어 소통','소리 내기','녹음/비대면','한 단어','짧은 문장','질문/대화 시작','대화 이어가기','여러 사람 앞'];
+const CATS = [...new Set(EXAMPLES.map(e => e[0]))];
+const exampleSteps = () => EXAMPLES.map(([cat, lv, suds, text], i) => ({ id: 'ex' + i, text, cat, level: LEVELS[lv], suds }));
+if (!state.seeded) { if (!state.steps.length) state.steps = exampleSteps(); state.seeded = true; save(); }
+const selected = new Set();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 const $ = id => document.getElementById(id);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -186,28 +313,59 @@ function isMastered(step) {
 }
 
 function renderLadder() {
-  const steps = [...state.steps].sort((a, b) => a.suds - b.suds);
-  const next = steps.find(s => !isMastered(s));
+  const cats = [...new Set([...CATS, ...state.steps.map(s => s.cat || '나만의 과제')])];
+  const f = $('catFilter').value || '전체';
+  $('catFilter').innerHTML = ['전체', ...cats].map(c => `<option ${c === f ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  $('stepCat').innerHTML = [...cats.filter(c => c !== '나만의 과제'), '나만의 과제'].map(c => `<option ${c === '나만의 과제' ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  const all = [...state.steps].sort((a, b) => a.suds - b.suds);
+  const steps = f === '전체' ? all : all.filter(s => (s.cat || '나만의 과제') === f);
+  $('ladderCount').textContent = `표시 ${steps.length}개 / 전체 ${state.steps.length}개`;
+  $('selCount').textContent = selected.size;
+  const next = all.find(s => !isMastered(s) && s.suds >= 3) || all.find(s => !isMastered(s));
   $('ladderList').innerHTML = steps.length ? steps.map(s => {
     const n = logsFor(s.id).length, m = isMastered(s);
-    return `<li><span class="badge">${s.suds}</span>
+    return `<li><input type="checkbox" data-sel="${s.id}" ${selected.has(s.id) ? 'checked' : ''} aria-label="선택">
+      <button class="badge" style="border:0;cursor:pointer" data-suds="${s.id}" title="예상 불안 수정">${s.suds}</button>
       <div class="grow"><div class="${m ? 'done' : ''}">${esc(s.text)}</div>
-      <div class="meta">${esc(s.level)} · 연습 ${n}회${m ? ' · ✓ 익숙해짐' : s === next ? ' · 👉 지금 연습할 단계' : ''}</div></div>
+      <div class="meta"><span class="cat">${esc(s.cat || '나만의 과제')}</span>${esc(s.level)} · 연습 ${n}회${m ? ' · ✓ 익숙해짐' : s === next ? ' · 👉 지금 연습할 단계' : ''}</div></div>
       <button class="ghost" data-del-step="${s.id}" aria-label="삭제">✕</button></li>`;
-  }).join('') : '<li class="empty">아직 과제가 없습니다. 위에서 10~15개 정도 추가해 보세요.</li>';
-  $('logStep').innerHTML = steps.map(s => `<option value="${s.id}" ${s === next ? 'selected' : ''}>[${s.suds}] ${esc(s.text)}</option>`).join('')
+  }).join('') : '<li class="empty">과제가 없습니다. 위에서 직접 추가하거나 [예시 다시 넣기]를 눌러 보세요.</li>';
+  $('logStep').innerHTML = all.map(s => `<option value="${s.id}" ${s === next ? 'selected' : ''}>[${s.suds}] ${esc(s.text)}</option>`).join('')
     || '<option value="">먼저 불안 사다리에 과제를 추가하세요</option>';
 }
+function removeSteps(ids) {
+  state.steps = state.steps.filter(s => !ids.has(s.id));
+  ids.forEach(id => selected.delete(id)); save(); renderAll();
+}
 $('ladderList').onclick = e => {
-  const id = e.target.dataset.delStep;
-  if (id && confirm('이 과제를 삭제할까요? (관련 연습 기록은 유지됩니다)')) {
-    state.steps = state.steps.filter(s => s.id !== id); save(); renderAll();
+  const d = e.target.dataset;
+  if (d.delStep) removeSteps(new Set([d.delStep]));  // 한 개 삭제는 바로 (예시를 빠르게 정리할 수 있도록)
+  if (d.sel) { e.target.checked ? selected.add(d.sel) : selected.delete(d.sel); $('selCount').textContent = selected.size; }
+  if (d.suds) {
+    const s = state.steps.find(x => x.id === d.suds);
+    const v = prompt(`"${s.text}"\n예상 불안 (0–10)`, s.suds);
+    if (v !== null && v.trim() !== '' && +v >= 0 && +v <= 10) { s.suds = Math.round(+v); save(); renderAll(); }
   }
+};
+$('catFilter').onchange = renderLadder;
+$('selectAll').onclick = () => { document.querySelectorAll('[data-sel]').forEach(c => selected.add(c.dataset.sel)); renderLadder(); };
+$('clearSel').onclick = () => { selected.clear(); renderLadder(); };
+$('deleteSel').onclick = () => {
+  if (selected.size && confirm(`선택한 ${selected.size}개 과제를 삭제할까요? (연습 기록은 유지됩니다)`)) removeSteps(new Set(selected));
+};
+$('deleteAll').onclick = () => {
+  if (state.steps.length && confirm('사다리의 모든 과제를 삭제할까요? (연습 기록은 유지됩니다)')) removeSteps(new Set(state.steps.map(s => s.id)));
+};
+$('restoreEx').onclick = () => {
+  const have = new Set(state.steps.map(s => s.id));
+  const missing = exampleSteps().filter(s => !have.has(s.id));
+  if (!missing.length) return alert('예시 과제가 모두 들어 있습니다.');
+  if (confirm(`삭제했던 예시 ${missing.length}개를 다시 넣을까요?`)) { state.steps.push(...missing); save(); renderAll(); }
 };
 $('addStep').onclick = () => {
   const text = $('stepText').value.trim();
   if (!text) return $('stepText').focus();
-  state.steps.push({ id: uid(), text, level: $('stepLevel').value, suds: +$('stepSuds').value });
+  state.steps.push({ id: uid(), text, cat: $('stepCat').value, level: $('stepLevel').value, suds: +$('stepSuds').value });
   $('stepText').value = ''; save(); renderAll();
 };
 
@@ -282,7 +440,7 @@ $('importFile').onchange = e => {
   f.text().then(t => {
     const s = JSON.parse(t);
     if (!Array.isArray(s.steps) || !Array.isArray(s.logs)) throw new Error();
-    if (confirm('현재 기록을 가져온 파일로 바꿀까요?')) { state = { steps: s.steps, logs: s.logs, thoughts: s.thoughts || [] }; save(); renderAll(); renderChart(); }
+    if (confirm('현재 기록을 가져온 파일로 바꿀까요?')) { state = { steps: s.steps, logs: s.logs, thoughts: s.thoughts || [], seeded: true }; save(); renderAll(); renderChart(); }
   }).catch(() => alert('올바른 파일이 아닙니다.'));
 };
 

@@ -1,6 +1,6 @@
 // A4 PDF 생성: node render.js
 //  - guide.html, worksheets.html -> ../guide.pdf, ../worksheets.pdf
-//  - practice.html의 [사다리 인쇄] 결과(예시 과제 전체, 난이도 내림차순) -> ../ladder.pdf
+//  - practice.html의 [사다리 인쇄] 결과(예시 과제 전체, 쉬운 순) -> ../ladder.pdf
 const { chromium } = require('playwright');
 const path = require('path');
 (async () => {

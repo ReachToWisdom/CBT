@@ -681,18 +681,18 @@ $('importFile').onchange = e => {
 
 $('printLadder').onclick = () => {
   const f = $('catFilter').value || '전체', d = $('diffFilter').value || '전체';
-  const steps = visibleSteps().sort((a, b) => byEasy(b, a));
+  const steps = visibleSteps().sort(byEasy);
   const label = [f, d].filter(x => x !== '전체').join(' · ');
   if (!steps.length) return alert('인쇄할 과제가 없습니다.');
   $('printArea').innerHTML = `<h1>나의 불안 사다리${label ? ' · ' + esc(label) : ''}</h1>
     <div class="pmeta"><span>이름:</span><span>인쇄일: ${today()}</span></div>
-    <p>위로 갈수록 어려운 과제입니다. <b>맨 아래(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 올라가세요. 연습할 때마다 □에 ✓ 하세요.</p>
+    <p>아래로 갈수록 어려운 과제입니다. <b>위(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 내려가세요. 연습할 때마다 □에 ✓ 하세요.</p>
     <table><thead><tr><th style="width:6%">순서</th><th style="width:12%">상황</th><th>말하기 과제</th><th style="width:17%">단계</th><th style="width:8%">예상<br>불안</th><th style="width:15%">연습 (✓)</th><th style="width:7%">완료</th></tr></thead><tbody>
     ${steps.map((s, i) => {
       const band = s.suds >= 7 ? '어려움 (예상 불안 7–10)' : s.suds >= 4 ? '보통 (예상 불안 4–6)' : '쉬움 (예상 불안 0–3)';
       const prev = i && steps[i - 1], prevBand = prev && (prev.suds >= 7 ? 3 : prev.suds >= 4 ? 2 : 1), curBand = s.suds >= 7 ? 3 : s.suds >= 4 ? 2 : 1;
       const count = steps.filter(x => (x.suds >= 7 ? 3 : x.suds >= 4 ? 2 : 1) === curBand).length;
-      return (prevBand === curBand ? '' : `<tr class="band"><td colspan="7">${band} · ${count}개</td></tr>`) + `<tr><td class="c">${steps.length - i}</td><td>${esc(s.cat || '나만의 과제')}</td><td>${esc(s.text)}</td><td>${esc(s.level)}</td>
+      return (prevBand === curBand ? '' : `<tr class="band"><td colspan="7">${band} · ${count}개</td></tr>`) + `<tr><td class="c">${i + 1}</td><td>${esc(s.cat || '나만의 과제')}</td><td>${esc(s.text)}</td><td>${esc(s.level)}</td>
       <td class="c">${s.suds}</td><td>${'□ '.repeat(Math.max(0, 5 - logsFor(s.id).length)).replace(/^/, '☑ '.repeat(Math.min(5, logsFor(s.id).length)))}</td><td class="c">${isMastered(s) ? '☑' : '□'}</td></tr>`;
     }).join('')}
     </tbody></table>`;

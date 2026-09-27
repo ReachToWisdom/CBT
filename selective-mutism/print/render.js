@@ -1,4 +1,6 @@
-// Renders guide.html and worksheets.html to A4 PDFs: node render.js
+// A4 PDF 생성: node render.js
+//  - guide.html, worksheets.html -> ../guide.pdf, ../worksheets.pdf
+//  - practice.html의 [사다리 인쇄] 결과(예시 과제 전체, 난이도 내림차순) -> ../ladder.pdf
 const { chromium } = require('playwright');
 const path = require('path');
 (async () => {
@@ -9,5 +11,13 @@ const path = require('path');
     await p.evaluate(() => document.fonts.ready);
     await p.pdf({ path: path.join(__dirname, '..', n + '.pdf'), format: 'A4', printBackground: true, preferCSSPageSize: true });
   }
+  const ctx = await b.newContext();  // 빈 저장소 = 예시 과제 전체
+  const lp = await ctx.newPage();
+  await lp.addInitScript(() => { window.print = () => {}; });
+  await lp.goto('file://' + path.join(__dirname, '..', 'practice.html'));
+  await lp.click('#printLadder');
+  await lp.evaluate(() => { document.querySelector('.pmeta span:last-child').textContent = '날짜:'; });
+  await lp.emulateMedia({ media: 'print' });
+  await lp.pdf({ path: path.join(__dirname, '..', 'ladder.pdf'), format: 'A4', printBackground: true, preferCSSPageSize: true });
   await b.close();
 })();

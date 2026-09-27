@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>용기 스티커판</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+@page{size:A4;margin:12mm}
+*{box-sizing:border-box}
+body{margin:0;font:10pt/1.5 "Noto Sans KR","WenQuanYi Zen Hei",sans-serif;color:#222;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{break-after:page}
+.page:last-child{break-after:auto}
+h1{font-size:24pt;font-weight:900;margin:0;color:#2f7d6d;text-align:center;letter-spacing:2pt}
+.sub{text-align:center;color:#555;margin:0 0 8pt}
+.meta{display:flex;gap:14pt;margin:0 0 8pt;font-size:10.5pt}
+.meta span{flex:1;border-bottom:1.5px solid #444;padding-bottom:2pt}
+.rules{border:2px dashed #f0a53a;border-radius:10pt;padding:6pt 10pt;background:#fff8ec;margin-bottom:10pt}
+.rules b{color:#c9771a}
+.rules ul{margin:2pt 0 0;padding-left:16pt}
+.rules li{margin:1pt 0}
+.board{display:grid;grid-template-columns:repeat(10,1fr);gap:5pt 4pt;margin-bottom:10pt}
+.cell{position:relative;aspect-ratio:1;border:2px solid #9bc9bd;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8pt;color:#9bc9bd;font-weight:700;background:#fff}
+.cell.goal{border:3px solid #f0a53a;background:#fff3dd;color:#c9771a}
+.cell.goal.final{border-color:#e0567a;background:#ffe6ee;color:#c23a60}
+.cell .flag{position:absolute;top:-9pt;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:7pt;font-weight:900;background:#f0a53a;color:#fff;border-radius:6pt;padding:0 4pt;line-height:12pt}
+.cell.final .flag{background:#e0567a}
+.cell svg{position:absolute;width:44%;height:44%;opacity:.35}
+.rowlabel{grid-column:1/-1;height:6pt}
+table{width:100%;border-collapse:collapse}
+th,td{border:1.5px solid #9bc9bd;padding:5pt 6pt;text-align:left;vertical-align:middle}
+th{background:#e2f1ed;color:#1f5f53}
+.rewards td{height:26pt}
+.rewards td.g{font-weight:900;color:#c9771a;white-space:nowrap}
+.rewards tr.final td.g{color:#c23a60}
+.ex{color:#aaa;font-size:8.5pt}
+.check{font-size:13pt;text-align:center}
+.cheer{text-align:center;margin-top:8pt;font-weight:700;color:#2f7d6d}
+/* 주간 기록 */
+.week{margin-bottom:10pt;break-inside:avoid}
+.week table td,.week table th{text-align:center;padding:3pt 2pt;font-size:9pt}
+.week table td:first-child,.week table th:first-child{text-align:left;padding-left:6pt;width:21%}
+.week .wt{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 3pt}
+.week .wt b{font-size:12pt;color:#2f7d6d}
+.dots{letter-spacing:0;font-size:9pt;color:#9bc9bd}
+.week table,.task table{table-layout:fixed}
+.week table td{height:23pt}
+.star{font-size:12pt;color:#f0a53a}
+.goalrow td{background:#fff8ec}
+.legend{font-size:8.5pt;color:#555;margin:0 0 8pt}
+/* 단계 넘어가기 체크판 */
+.rule{border:2px solid #2f7d6d;border-radius:10pt;padding:6pt 10pt;background:#eef6f3;margin-bottom:9pt;font-size:9.5pt}
+.rule b{color:#1f5f53}
+.rule ol{margin:2pt 0 0;padding-left:16pt}
+.task{margin-bottom:8pt;break-inside:avoid}
+.task .tt{display:flex;gap:10pt;margin-bottom:2pt;font-size:9.5pt}
+.task .tt span{border-bottom:1.5px solid #444;flex:1}
+.task .tt span.n{flex:0 0 auto;border:0;font-weight:900;color:#2f7d6d}
+.task td,.task th{text-align:center;padding:2.5pt 1pt;font-size:8.5pt}
+.task td:first-child,.task th:first-child{text-align:left;padding-left:5pt;width:22%}
+.task tr.ok td{background:#fff8ec}
+.face{font-size:11pt;color:#9bc9bd}
+</style>
+</head>
+<body>
+
+<section class="page">
+  <h1>★ 용기 스티커판 ★</h1>
+  <p class="sub">떨려도 말해 본 순간마다 스티커를 하나씩 붙여요. 주황색 칸에 닿으면 약속한 선물을 받아요!</p>
+  <div class="meta"><span>이름:</span><span>시작한 날:</span><span>다 채운 날:</span></div>
+
+  <div class="rules">
+    <b>스티커 받는 방법</b>
+    <ul>
+      <li>오늘의 연습(<b>기본 5분</b>: 어제 단계로 몸풀기 → 오늘 과제)을 하면 → 스티커 <b>1개</b>. 처음부터 편하면 5분이 안 돼도 OK!</li>
+      <li>밖에서 <b>용기 순간</b> 1번 (예: 편의점에서 "고맙습니다", 출석 때 "네") → 스티커 <b>1개</b></li>
+      <li><b>어제 한 것을 오늘 또 해도</b> 똑같이 스티커를 받아요. 같은 걸 여러 번 하는 게 진짜 용기예요.</li>
+      <li>같은 과제가 <b>3일 연속 처음부터 편하면</b>(첫 시도 떨림 0~2) → 보너스 스티커 <b>2개</b>, 그다음 단계로!</li>
+      <li>말이 안 나와도 <b>시도한 것</b>도 용기예요. 스티커는 절대 떼지 않아요.</li>
+    </ul>
+  </div>
+
+  <div class="board" id="board"></div>
+
+  <table class="rewards">
+    <thead><tr><th style="width:17%">목표</th><th>약속한 선물 (아이와 함께 정해요)</th><th style="width:19%">달성한 날</th><th style="width:9%">확인</th></tr></thead>
+    <tbody id="rewards"></tbody>
+  </table>
+  <p class="cheer">"떨려도 괜찮아. 조금씩 하면 돼!"</p>
+</section>
+
+<section class="page">
+  <h1>단계 넘어가기 체크판</h1>
+  <p class="sub">한 과제를 여러 날 반복해서, 하루가 지나도 처음부터 편할 때 다음 단계로 가요.</p>
+  <div class="rule">
+    <b>왜 하루가 지나면 다시 떨릴까요?</b> 연습이 끝날 때 편해져도, 다음 날이면 불안이 다시 올라오는 건 흔한 일이에요(특히 수줍음이 많은 아이). 그래서 <b>연습 마지막이 아니라 "다음 날 첫 시도"가 편한지</b>로 판단해요.
+    <ol>
+      <li>하루 <b>기본 5분</b>: <b>어제 편했던 단계로 몸풀기</b> 1~2번 → 오늘 과제. <b>처음부터 편하면</b> 5분 안 채워도 끝, <b>안 편하면</b> 편해질 때까지 여러 번(보통 3~5번).</li>
+      <li>그날 <b>첫 시도 떨림</b>과 <b>마지막 떨림</b>(0~10)을 적어요.</li>
+      <li><b>첫 시도 떨림이 0~2인 날이 3일 연속</b>이면 ☺ 칸 3개 → 다음 단계로 넘어가요.</li>
+      <li>주말·방학처럼 며칠 쉬었다가 첫 떨림이 5 이상이면, <b>한 단계 내려가서</b> 다시 시작해도 괜찮아요. 뒤로 가는 게 아니라 다지는 거예요.</li>
+      <li>다음 단계로 간 뒤에도 전 단계는 <b>몸풀기로 1~2주 계속</b>해요.</li>
+      <li><b>지루해하면</b> 같은 난이도의 다른 과제로 바꾸거나(사람·장소·말만 바꾸기), 놀이로 만들어요. 억지로 반복하지 않아요.</li>
+    </ol>
+  </div>
+  <div id="tasks"></div>
+</section>
+
+<section class="page">
+  <h1>용기 주간 기록</h1>
+  <p class="sub">하루 목표를 채우면 그날 칸에 ✓, 한 주 목표를 채우면 맨 아래 칸에 ✓ 해요.</p>
+  <div class="meta"><span>이름:</span><span>시작한 날:</span></div>
+  <p class="legend">
+    <b>몸풀기</b>: 어제 편했던 단계 1~2번 ✓ ·
+    <b>오늘 과제 반복</b>: 한 번 할 때마다 ○ 칠하기 (편하면 1~2번, 안 편하면 편해질 때까지) ·
+    <b>떨림</b>: 첫 시도와 마지막 시도의 떨림 0~10 ·
+    <b>용기 순간</b>: 밖에서 말해 본 순간마다 ○ 칠하기 (하루 목표 1개 이상)
+  </p>
+  <div id="weeks1"></div>
+</section>
+
+<section class="page">
+  <h1>용기 주간 기록</h1>
+  <p class="sub">꾸준히 하는 것이 가장 큰 용기예요!</p>
+  <div id="weeks2"></div>
+</section>
+
+<script>
+// 스티커 50칸, 10칸마다 목표
+const GOALS = { 10: '목표 1', 20: '목표 2', 30: '목표 3', 40: '목표 4', 50: '최종 목표' };
+const EXAMPLES = { 10: '예) 좋아하는 간식', 20: '예) 놀이터 30분 더 놀기', 30: '예) 새 스티커북·색연필', 40: '예) 가족 영화 보기', 50: '예) 가고 싶은 곳 나들이' };
+const star = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3 6.9 7.5.7-5.7 5 1.7 7.4L12 18.3 5.5 22l1.7-7.4-5.7-5 7.5-.7z"/></svg>';
+let b = '';
+for (let i = 1; i <= 50; i++) {
+  const g = GOALS[i];
+  b += `<div class="cell${g ? ' goal' : ''}${i === 50 ? ' final' : ''}">${g ? `<span class="flag">${g}</span>${star}` : ''}${i}</div>`;
+}
+document.getElementById('board').innerHTML = b;
+document.getElementById('rewards').innerHTML = Object.keys(GOALS).map(n =>
+  `<tr class="${n == 50 ? 'final' : ''}"><td class="g">${GOALS[n]}<br><small>스티커 ${n}개</small></td><td><span class="ex">${EXAMPLES[n]}</span></td><td></td><td class="check">□</td></tr>`).join('');
+
+const days = ['월', '화', '수', '목', '금', '토', '일'];
+const td = c => days.map(() => `<td>${c}</td>`).join('');
+const week = k => `<div class="week"><div class="wt"><b>${k}주차</b><span>오늘 과제: ______________________ &nbsp; ____월 ____일 ~ ____월 ____일</span></div>
+  <table><thead><tr><th>할 일</th>${days.map(d => `<th>${d}</th>`).join('')}</tr></thead><tbody>
+  <tr><td>몸풀기 (어제 단계)</td>${td('□')}</tr>
+  <tr><td>오늘 과제 반복</td>${td('<span class="dots">○○○○○</span>')}</tr>
+  <tr><td>첫 시도 떨림</td>${td('')}</tr>
+  <tr><td>마지막 떨림</td>${td('')}</tr>
+  <tr><td>용기 순간 (밖에서)</td>${td('<span class="dots">○○○</span>')}</tr>
+  <tr class="goalrow"><td><b>하루 목표 달성</b></td>${td('□')}</tr>
+  <tr class="goalrow"><td><b>한 주 목표</b></td><td colspan="7" style="text-align:left;padding-left:8pt">받은 스티커 ______개 / 목표 ______개 &nbsp; 달성 □ &nbsp; 가장 용감했던 순간: ____________________</td></tr>
+  </tbody></table></div>`;
+document.getElementById('weeks1').innerHTML = week(1) + week(2);
+document.getElementById('weeks2').innerHTML = week(3) + week(4);
+const cols = 10;
+const tcell = c => Array.from({ length: cols }, () => `<td>${c}</td>`).join('');
+document.getElementById('tasks').innerHTML = [1, 2, 3].map(n => `<div class="task">
+  <div class="tt"><span class="n">과제 ${n}</span><span>과제:</span><span style="flex:0 0 28%">시작한 날:</span></div>
+  <table><thead><tr><th>연습한 날</th>${Array.from({ length: cols }, (_, i) => `<th>${i + 1}일째</th>`).join('')}</tr></thead><tbody>
+  <tr><td>날짜</td>${tcell('')}</tr>
+  <tr><td>첫 시도 떨림 (0~10)</td>${tcell('')}</tr>
+  <tr><td>마지막 떨림 (0~10)</td>${tcell('')}</tr>
+  <tr class="ok"><td><b>처음부터 편함</b> (첫 떨림 0~2)</td>${tcell('<span class="face">☺</span>')}</tr>
+  <tr><td colspan="${cols + 1}" style="text-align:left;padding-left:5pt">☺ <b>3일 연속</b> → 다음 단계로 □ &nbsp;&nbsp; 넘어간 날: ________ &nbsp;&nbsp; 보너스 스티커 2개 □</td></tr>
+  </tbody></table></div>`).join('');
+</script>
+</body>
+</html>

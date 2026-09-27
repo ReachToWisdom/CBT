@@ -116,6 +116,10 @@ svg text{fill:var(--muted);font-size:11px}
         <button class="danger" id="deleteSel">선택 삭제 (<span id="selCount">0</span>)</button>
         <button id="restoreEx">예시 다시 넣기</button>
         <button class="danger" id="deleteAll">전체 삭제</button>
+      </div>
+      <div class="toolbar">
+        <select id="sortMode" aria-label="정렬 방식"><option value="level">난이도순으로 보기</option><option value="cat">상황별로 묶어 보기</option></select>
+        <select id="sortDir" aria-label="정렬 방향"><option value="asc">쉬운 것부터 (오름차순)</option><option value="desc">어려운 것부터 (내림차순)</option></select>
         <button id="printLadder">🖨 사다리 인쇄</button>
       </div>
       <p class="meta" id="ladderCount"></p>
@@ -511,6 +515,12 @@ const LEVELS = ['비언어 소통','소리 내기','녹음/비대면','한 단�
 const CATS = ['혼자/집', '비언어/소리', '가족/편한 사람', '비대면', '가게/서비스', '이웃/동네', '공공장소', '학교', '취미/운동', '교통/여행', '병원/기관', '직장', '친구/사교'];
 const catRank = s => { const i = CATS.indexOf(s.cat); return i < 0 ? CATS.length : i; };
 const byEasy = (a, b) => a.suds - b.suds || catRank(a) - catRank(b);
+// 화면 목록과 인쇄에 쓰는 순서: 상황별이면 상황(쉬운 곳 → 어려운 곳)으로 묶고 그 안에서 난이도 방향 적용
+function orderSteps(list) {
+  const dir = $('sortDir').value === 'desc' ? -1 : 1;
+  if ($('sortMode').value === 'cat') return list.sort((a, b) => catRank(a) - catRank(b) || (a.cat || '').localeCompare(b.cat || '') || dir * (a.suds - b.suds));
+  return list.sort((a, b) => dir * byEasy(a, b));
+}
 const exampleSteps = () => EXAMPLES.map(([cat, lv, suds, text], i) => ({ id: 'ex' + i, text, cat, level: LEVELS[lv], suds }));
 if (!state.seeded) { if (!state.steps.length) state.steps = exampleSteps(); state.seeded = true; state.exCount = EXAMPLES.length; save(); }
 else if ((state.exCount || 100) < EXAMPLES.length) {  // 예시가 늘어난 버전: 새 예시만 추가 (지운 예시는 되살리지 않음)
@@ -553,7 +563,7 @@ function renderLadder() {
   const all = [...state.steps].sort(byEasy);
   const d = $('diffFilter').value || '전체';
   $('diffFilter').innerHTML = Object.keys(DIFFS).map(k => `<option value="${k}" ${k === d ? 'selected' : ''}>${k === '전체' ? '난이도 전체' : k}</option>`).join('');
-  const steps = visibleSteps().sort(byEasy);
+  const steps = orderSteps(visibleSteps());
   $('ladderCount').textContent = `표시 ${steps.length}개 / 전체 ${state.steps.length}개`;
   $('selCount').textContent = selected.size;
   const next = all.find(s => !isMastered(s) && s.suds >= 3) || all.find(s => !isMastered(s));
@@ -583,6 +593,11 @@ $('ladderList').onclick = e => {
   }
 };
 $('catFilter').onchange = $('diffFilter').onchange = renderLadder;
+try { const o = JSON.parse(localStorage.getItem(KEY + '-sort')); if (o) { $('sortMode').value = o.mode; $('sortDir').value = o.dir; } } catch (e) {}
+$('sortMode').onchange = $('sortDir').onchange = () => {
+  try { localStorage.setItem(KEY + '-sort', JSON.stringify({ mode: $('sortMode').value, dir: $('sortDir').value })); } catch (e) {}
+  renderLadder();
+};
 $('selectAll').onclick = () => { document.querySelectorAll('[data-sel]').forEach(c => selected.add(c.dataset.sel)); renderLadder(); };
 $('clearSel').onclick = () => { selected.clear(); renderLadder(); };
 $('deleteSel').onclick = () => {
@@ -681,21 +696,31 @@ $('importFile').onchange = e => {
 
 $('printLadder').onclick = () => {
   const f = $('catFilter').value || '전체', d = $('diffFilter').value || '전체';
-  const steps = visibleSteps().sort(byEasy);
+  const byCat = $('sortMode').value === 'cat', desc = $('sortDir').value === 'desc';
+  const steps = orderSteps(visibleSteps());
   const label = [f, d].filter(x => x !== '전체').join(' · ');
   if (!steps.length) return alert('인쇄할 과제가 없습니다.');
-  $('printArea').innerHTML = `<h1>나의 불안 사다리${label ? ' · ' + esc(label) : ''}</h1>
-    <div class="pmeta"><span>이름:</span><span>인쇄일: ${today()}</span></div>
-    <p>아래로 갈수록 어려운 과제입니다. <b>위(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 내려가세요. 연습할 때마다 □에 ✓ 하세요.</p>
-    <table><thead><tr><th style="width:6%">순서</th><th style="width:12%">상황</th><th>말하기 과제</th><th style="width:17%">단계</th><th style="width:8%">예상<br>불안</th><th style="width:15%">연습 (✓)</th><th style="width:7%">완료</th></tr></thead><tbody>
-    ${steps.map((s, i) => {
-      const band = s.suds >= 7 ? '어려움 (예상 불안 7–10)' : s.suds >= 4 ? '보통 (예상 불안 4–6)' : '쉬움 (예상 불안 0–3)';
-      const prev = i && steps[i - 1], prevBand = prev && (prev.suds >= 7 ? 3 : prev.suds >= 4 ? 2 : 1), curBand = s.suds >= 7 ? 3 : s.suds >= 4 ? 2 : 1;
-      const count = steps.filter(x => (x.suds >= 7 ? 3 : x.suds >= 4 ? 2 : 1) === curBand).length;
-      return (prevBand === curBand ? '' : `<tr class="band"><td colspan="7">${band} · ${count}개</td></tr>`) + `<tr><td class="c">${i + 1}</td><td>${esc(s.cat || '나만의 과제')}</td><td>${esc(s.text)}</td><td>${esc(s.level)}</td>
+  const diffBand = x => x.suds >= 7 ? '어려움 (예상 불안 7–10)' : x.suds >= 4 ? '보통 (예상 불안 4–6)' : '쉬움 (예상 불안 0–3)';
+  const catName = x => x.cat || '나만의 과제';
+  const group = byCat ? catName : diffBand;
+  let n = 0;
+  const rows = steps.map((s, i) => {
+    const g = group(s), head = !i || group(steps[i - 1]) !== g;
+    if (head && byCat) n = 0;  // 상황별이면 상황마다 순서를 1부터
+    const title = byCat ? `${CATS.includes(g) ? CATS.indexOf(g) + 1 + '. ' : ''}${esc(g)}` : g;
+    return (head ? `<tr class="band"><td colspan="7">${title} · ${steps.filter(x => group(x) === g).length}개</td></tr>` : '') +
+      `<tr><td class="c">${++n}</td><td>${esc(catName(s))}</td><td>${esc(s.text)}</td><td>${esc(s.level)}</td>
       <td class="c">${s.suds}</td><td>${'□ '.repeat(Math.max(0, 5 - logsFor(s.id).length)).replace(/^/, '☑ '.repeat(Math.min(5, logsFor(s.id).length)))}</td><td class="c">${isMastered(s) ? '☑' : '□'}</td></tr>`;
-    }).join('')}
-    </tbody></table>`;
+  }).join('');
+  const how = (byCat ? '상황별' : '난이도순') + ' · ' + (desc ? '어려운 것부터' : '쉬운 것부터');
+  const tip = desc
+    ? '위로 갈수록 어려운 과제입니다. <b>아래(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 올라가세요.'
+    : '아래로 갈수록 어려운 과제입니다. <b>위(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 내려가세요.';
+  $('printArea').innerHTML = `<h1>나의 불안 사다리${label ? ' · ' + esc(label) : ''}</h1>
+    <div class="pmeta"><span>이름:</span><span>인쇄일: ${today()}</span><span>정렬: ${how}</span></div>
+    <p>${tip}${byCat ? ' 상황은 쉬운 곳부터 차례로 묶여 있으니, 원하는 상황을 골라 연습하세요.' : ''} 연습할 때마다 □에 ✓ 하세요.</p>
+    <table><thead><tr><th style="width:6%">순서</th><th style="width:12%">상황</th><th>말하기 과제</th><th style="width:17%">단계</th><th style="width:8%">예상<br>불안</th><th style="width:15%">연습 (✓)</th><th style="width:7%">완료</th></tr></thead><tbody>
+    ${rows}</tbody></table>`;
   window.print();
 };
 

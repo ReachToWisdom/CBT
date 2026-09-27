@@ -7,7 +7,7 @@
 
 함께 제공되는 [`practice.html`](./practice.html)을 브라우저로 열면
 불안 사다리 만들기(예시 과제 300개 미리 입력, 상황·난이도별 보기, 필요 없는 것은 삭제·인쇄), 연습 기록, 진행 그래프를 바로 사용할 수 있습니다(기록은 내 브라우저에만 저장됩니다).
-인쇄용: [`guide.pdf`](./guide.pdf)(안내서), [`ladder.pdf`](./ladder.pdf)(예시 과제 300개 불안 사다리, 쉬운 순), [`worksheets.pdf`](./worksheets.pdf)(연습 기록지 + 예시 과제 300개). PDF 다시 만들기: `node print/render.js`
+인쇄용: [`guide.pdf`](./guide.pdf)(안내서), [`ladder.pdf`](./ladder.pdf)(예시 과제 300개 불안 사다리, 난이도순), [`ladder-situation-asc.pdf`](./ladder-situation-asc.pdf)·[`ladder-situation-desc.pdf`](./ladder-situation-desc.pdf)(상황별 묶음, 쉬운 순·어려운 순), [`worksheets.pdf`](./worksheets.pdf)(연습 기록지 + 예시 과제 300개). PDF 다시 만들기: `node print/render.js`
 
 ---
 

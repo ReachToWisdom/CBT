@@ -1,6 +1,6 @@
 // A4 PDF 생성: node render.js
 //  - guide.html, worksheets.html -> ../guide.pdf, ../worksheets.pdf
-//  - practice.html의 [사다리 인쇄] 결과(예시 과제 전체, 쉬운 순) -> ../ladder.pdf
+//  - practice.html의 [사다리 인쇄] 결과(예시 과제 전체): 난이도순 -> ../ladder.pdf, 상황별 -> ../ladder-situation-{asc,desc}.pdf
 const { chromium } = require('playwright');
 const path = require('path');
 (async () => {
@@ -15,9 +15,14 @@ const path = require('path');
   const lp = await ctx.newPage();
   await lp.addInitScript(() => { window.print = () => {}; });
   await lp.goto('file://' + path.join(__dirname, '..', 'practice.html'));
-  await lp.click('#printLadder');
-  await lp.evaluate(() => { document.querySelector('.pmeta span:last-child').textContent = '날짜:'; });
   await lp.emulateMedia({ media: 'print' });
-  await lp.pdf({ path: path.join(__dirname, '..', 'ladder.pdf'), format: 'A4', printBackground: true, preferCSSPageSize: true });
+  for (const [mode, dir, file] of [['level', 'asc', 'ladder'], ['cat', 'asc', 'ladder-situation-asc'], ['cat', 'desc', 'ladder-situation-desc']]) {
+    await lp.evaluate(([m, d]) => {
+      document.getElementById('sortMode').value = m; document.getElementById('sortDir').value = d;
+      document.getElementById('printLadder').click();
+      document.querySelector('.pmeta span:nth-child(2)').textContent = '날짜:';
+    }, [mode, dir]);
+    await lp.pdf({ path: path.join(__dirname, '..', file + '.pdf'), format: 'A4', printBackground: true, preferCSSPageSize: true });
+  }
   await b.close();
 })();

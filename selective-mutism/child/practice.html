@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 아이 말하기 연습</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--ink:#23262b;--muted:#6b7078;--line:#e3e1db;--accent:#2f7d6d;--accent-soft:#e2f1ed;--warn:#b5542f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17191c;--card:#202328;--ink:#e8e6e1;--muted:#9aa0a8;--line:#33373d;--accent:#5cc0a9;--accent-soft:#1f3a34;--warn:#e58a63}}
+:root[data-theme="dark"]{--bg:#17191c;--card:#202328;--ink:#e8e6e1;--muted:#9aa0a8;--line:#33373d;--accent:#5cc0a9;--accent-soft:#1f3a34;--warn:#e58a63}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;margin:0 0 4px}
+h2{font-size:1.15rem;margin:0 0 12px}
+p.sub{color:var(--muted);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit}
+nav button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+label{display:block;font-size:.9rem;color:var(--muted);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:64px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.row{grid-template-columns:1fr}}
+button.primary{margin-top:14px;background:var(--accent);color:#fff;border:0;padding:10px 18px;border-radius:8px;font:inherit;cursor:pointer}
+button.ghost{background:none;border:0;color:var(--muted);cursor:pointer;font:inherit;padding:4px}
+button.ghost:hover{color:var(--warn)}
+.ladder li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ladder{list-style:none;margin:0;padding:0}
+.badge{min-width:34px;text-align:center;font-weight:600;border-radius:6px;padding:2px 6px;background:var(--accent-soft);color:var(--accent)}
+.grow{flex:1}
+.meta{font-size:.85rem;color:var(--muted)}
+.done{text-decoration:line-through;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.tablewrap{overflow-x:auto}
+.empty{color:var(--muted);font-style:italic}
+.tip{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:.92rem;margin-top:10px}
+.range{display:flex;align-items:center;gap:10px}
+.range output{min-width:24px;font-weight:600;text-align:right}
+.range input{padding:0}
+svg text{fill:var(--muted);font-size:11px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.toolbar select{width:auto}
+.toolbar button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:.9rem;cursor:pointer}
+.toolbar button.danger{color:var(--warn);border-color:var(--warn)}
+.ladder input[type=checkbox]{width:18px;height:18px;flex:none}
+.cat{font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-right:4px}
+.disclaimer{font-size:.85rem;color:var(--muted)}
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff;color:#000;font-size:10pt}
+  main{display:none}
+  #printArea{display:block}
+  #printArea h1{font-size:16pt;margin:0 0 2pt;color:#1f5f53}
+  #printArea .pmeta{display:flex;gap:16pt;margin:4pt 0 6pt}
+  #printArea .pmeta span{flex:1;border-bottom:1px solid #555}
+  #printArea p{font-size:8.5pt;color:#444;margin:0 0 6pt}
+  #printArea table{width:100%;border-collapse:collapse;font-size:8.5pt}
+  #printArea thead{display:table-header-group}
+  #printArea tr{break-inside:avoid}
+  #printArea th,#printArea td{border:1px solid #888;padding:2.5pt 4pt;text-align:left;vertical-align:middle}
+  #printArea th{background:#e2f1ed;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea td.c{text-align:center}
+  #printArea tr.band td{background:#2f7d6d;color:#fff;font-weight:700;font-size:9pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea tr.band{break-after:avoid}
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>우리 아이 말하기 연습 노트</h1>
+  <p class="sub">선택적 함묵증 · 초등학생용 (보호자와 함께) · 용기 사다리를 만들고, 한 단계씩 연습하고, 변화를 기록하세요.<br>
+    불안 점수는 아이에게 "얼마나 떨려? 0(하나도 안 떨림)~10(엄청 떨림)"으로 물어 보세요. 말하라고 재촉하지 말고 5초 기다려 주고, 대신 대답해 주지 마세요.<br>기록은 이 브라우저에만 저장됩니다.</p>
+
+  <nav role="tablist">
+    <button role="tab" data-tab="ladder" aria-selected="true">① 불안 사다리</button>
+    <button role="tab" data-tab="log" aria-selected="false">② 연습 기록</button>
+    <button role="tab" data-tab="thought" aria-selected="false">③ 생각 기록</button>
+    <button role="tab" data-tab="progress" aria-selected="false">④ 진행 상황</button>
+  </nav>
+
+  <section id="tab-ladder">
+    <div class="card">
+      <h2>과제 추가</h2>
+      <label for="stepText">말하기 과제</label>
+      <input id="stepText" placeholder="예) 문구점에서 '이거 주세요' 말하기">
+      <label for="stepCat">상황</label>
+      <select id="stepCat"></select>
+      <div class="row">
+        <div>
+          <label for="stepLevel">말하기 단계</label>
+          <select id="stepLevel">
+            <option>비언어 소통</option><option>소리 내기</option><option>녹음/비대면</option>
+            <option selected>한 단어</option><option>짧은 문장</option><option>질문/대화 시작</option>
+            <option>대화 이어가기</option><option>여러 사람 앞</option>
+          </select>
+        </div>
+        <div>
+          <label for="stepSuds">예상 불안 (0–10)</label>
+          <div class="range"><input id="stepSuds" type="range" min="0" max="10" value="5"><output id="stepSudsOut">5</output></div>
+        </div>
+      </div>
+      <button class="primary" id="addStep">사다리에 추가</button>
+      <div class="tip">예상 불안 <b>3~5</b>인 과제부터 시작하고, 같은 과제를 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 다음 단계로 올라가세요.</div>
+    </div>
+    <div class="card">
+      <h2>용기 사다리 <span class="meta">(쉬운 것 → 어려운 것)</span></h2>
+      <p class="meta" style="margin-top:-6px">예시 과제 300개가 미리 들어 있습니다. 상황·난이도로 골라 보고, 나에게 맞지 않는 과제는 ✕ 또는 체크 후 [선택 삭제]로 지우고, 예상 불안 숫자는 눌러서 내 느낌에 맞게 고치세요.</p>
+      <div class="toolbar">
+        <select id="catFilter" aria-label="상황 필터"></select>
+        <select id="diffFilter" aria-label="난이도 필터"></select>
+        <button id="selectAll">보이는 항목 모두 선택</button>
+        <button id="clearSel">선택 해제</button>
+        <button class="danger" id="deleteSel">선택 삭제 (<span id="selCount">0</span>)</button>
+        <button id="restoreEx">예시 다시 넣기</button>
+        <button class="danger" id="deleteAll">전체 삭제</button>
+      </div>
+      <div class="toolbar">
+        <select id="sortMode" aria-label="정렬 방식"><option value="level">난이도순으로 보기</option><option value="cat">상황별로 묶어 보기</option></select>
+        <select id="sortDir" aria-label="정렬 방향"><option value="asc">쉬운 것부터 (오름차순)</option><option value="desc">어려운 것부터 (내림차순)</option></select>
+        <button id="printLadder">🖨 사다리 인쇄</button>
+      </div>
+      <p class="meta" id="ladderCount"></p>
+      <ul class="ladder" id="ladderList"></ul>
+    </div>
+  </section>
+
+  <section id="tab-log" hidden>
+    <div class="card">
+      <h2>연습 기록하기</h2>
+      <label for="logStep">연습한 과제</label>
+      <select id="logStep"></select>
+      <label for="logPredict">연습 전 걱정/예측</label>
+      <textarea id="logPredict" placeholder="예) 친구들이 내 목소리 듣고 놀랄 것 같아"></textarea>
+      <div class="row">
+        <div>
+          <label for="logBefore">연습 전 불안</label>
+          <div class="range"><input id="logBefore" type="range" min="0" max="10" value="6"><output id="logBeforeOut">6</output></div>
+        </div>
+        <div>
+          <label for="logAfter">연습 후 불안</label>
+          <div class="range"><input id="logAfter" type="range" min="0" max="10" value="4"><output id="logAfterOut">4</output></div>
+        </div>
+      </div>
+      <label for="logResult">결과</label>
+      <select id="logResult">
+        <option value="full">완전히 해냈다</option>
+        <option value="partial">일부 해냈다 (속삭임, 한 단어 등)</option>
+        <option value="none">이번엔 못 했다 → 더 작게 나눠 보기</option>
+      </select>
+      <label for="logReflect">실제로 일어난 일 / 배운 점</label>
+      <textarea id="logReflect" placeholder="예) 아저씨가 웃으면서 '고마워' 했다. 생각보다 괜찮았다."></textarea>
+      <label for="logReward">나에게 주는 보상</label>
+      <input id="logReward" placeholder="예) 스티커 1개, 놀이터 10분 더">
+      <button class="primary" id="addLog">기록 저장</button>
+    </div>
+    <div class="card">
+      <h2>최근 기록</h2>
+      <div class="tablewrap"><table><thead><tr><th>날짜</th><th>과제</th><th>불안 전→후</th><th>결과</th><th>배운 점</th><th></th></tr></thead><tbody id="logTable"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="tab-thought" hidden>
+    <div class="card">
+      <h2>생각 기록 (인지 재구성)</h2>
+      <label for="thSituation">상황</label>
+      <input id="thSituation" placeholder="예) 선생님이 출석을 부름">
+      <label for="thAuto">자동적 사고</label>
+      <textarea id="thAuto" placeholder="예) 내가 말하면 다들 '말했다!' 하고 쳐다볼 거야"></textarea>
+      <label for="thTrap">생각의 함정</label>
+      <select id="thTrap">
+        <option>독심술</option><option>파국화</option><option>스포트라이트 효과</option>
+        <option>"이제 와서 말하면 이상할 거야"</option><option>흑백논리</option><option>기타</option>
+      </select>
+      <div class="row">
+        <div><label for="thFor">그 생각을 지지하는 증거</label><textarea id="thFor"></textarea></div>
+        <div><label for="thAgainst">반대 증거</label><textarea id="thAgainst"></textarea></div>
+      </div>
+      <label for="thBalanced">균형 잡힌 생각</label>
+      <textarea id="thBalanced" placeholder="예) 잠깐 볼 수도 있지만 금방 자기 할 일 한다. 떨려도 나는 할 수 있어!"></textarea>
+      <button class="primary" id="addThought">저장</button>
+    </div>
+    <div class="card"><h2>저장된 생각 기록</h2><div id="thoughtList"></div></div>
+  </section>
+
+  <section id="tab-progress" hidden>
+    <div class="card">
+      <h2>불안 변화</h2>
+      <div id="chart"></div>
+      <p class="meta" id="summary"></p>
+    </div>
+    <div class="card">
+      <h2>데이터 관리</h2>
+      <button class="primary" id="exportBtn">JSON으로 내보내기</button>
+      <label for="importFile">가져오기</label>
+      <input type="file" id="importFile" accept="application/json">
+    </div>
+    <p class="disclaimer">이 도구는 자가 연습 보조용이며 전문 치료를 대체하지 않습니다. 4~6주 연습해도 진전이 없거나, 일상에 큰 지장·우울·자해 생각이 있다면 전문가의 도움을 받으세요. (자살예방상담전화 109, 정신건강위기상담 1577-0199)</p>
+  </section>
+</main>
+<div id="printArea"></div>
+
+<script>
+const KEY = 'sm-practice-child-v1';
+let state = { steps: [], logs: [], thoughts: [] };
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) state = Object.assign(state, s); } catch (e) {}
+/* [분류, 말하기 단계(0–7), 예상 불안, 과제] */
+const EXAMPLES = [
+['집/혼자',2,1,'내 방에서 좋아하는 동화책 소리 내어 읽기'],
+['집/혼자',1,1,'혼자 있을 때 좋아하는 노래 크게 부르기'],
+['집/혼자',2,1,'인형·반려동물에게 오늘 있었던 일 말해 주기'],
+['집/혼자',2,1,'내 목소리를 녹음해서 들어 보기'],
+['집/혼자',2,1,'좋아하는 만화 대사 따라 말하기'],
+['집/혼자',2,1,'인형 놀이하며 인형 목소리 내기'],
+['집/혼자',2,2,'거울 보고 "안녕하세요, 저는 ○○이에요" 말하기'],
+['집/혼자',2,2,'"네", "아니요", "고맙습니다"를 작게·보통·크게 연습하기'],
+['집/혼자',2,2,'가게 놀이 대본("이거 주세요")을 소리 내 5번 연습하기'],
+['집/혼자',2,2,'AI 스피커·휴대폰에 말로 노래 틀어 달라고 하기'],
+['집/혼자',2,2,'내가 읽은 책을 녹음해서 오디오북 만들기'],
+['집/혼자',2,2,'선생님께 할 말을 미리 소리 내 연습하기'],
+['집/혼자',2,3,'방문을 열어 두고 평소 목소리로 책 읽기'],
+['집/혼자',2,3,'내가 말하는 모습을 영상으로 찍어 보기'],
+['집/혼자',2,3,'자기소개(이름, 학년, 좋아하는 것)를 녹음하기'],
+['집/혼자',2,3,'학교 숙제(받아쓰기·읽기)를 녹음해 보기'],
+['집/혼자',2,3,'녹음한 자기소개를 엄마·아빠에게 들려주기'],
+['집/혼자',2,3,'녹음한 책 읽기를 할머니·할아버지께 보내기'],
+['집/혼자',2,4,'녹음한 인사말을 담임 선생님께 보내기(부모님 도움)'],
+['집/혼자',2,4,'녹음한 책 읽기를 친구에게 보내기'],
+['가족',4,1,'엄마·아빠에게 오늘 학교에서 있었던 일 한 가지 말하기'],
+['가족',4,1,'가족에게 "잘 먹겠습니다" "잘 자요" 말하기'],
+['가족',4,1,'가족과 끝말잇기·스무고개 하기'],
+['가족',4,1,'형제·자매와 역할 놀이하며 말하기'],
+['가족',4,2,'가족 앞에서 좋아하는 캐릭터 소개하기'],
+['가족',4,2,'가족과 보드게임하며 큰 소리로 숫자 말하기'],
+['가족',4,2,'엄마·아빠와 가게 놀이(나는 손님)하기'],
+['가족',4,2,'엄마·아빠와 선생님 놀이(나는 학생, 대답하기)하기'],
+['가족',4,2,'가족 옆방에서 들리게 책 읽기'],
+['가족',4,3,'차 안에서 창문 연 채 가족과 이야기하기'],
+['가족',4,3,'마트에서 엄마·아빠에게 작게 "이거 사 줘" 말하기'],
+['가족',4,3,'놀이터에서 엄마·아빠를 부르기("엄마!")'],
+['가족',4,3,'식당에서 가족에게 먹고 싶은 메뉴 말하기(점원 멀리 있을 때)'],
+['가족',4,4,'식당에서 점원이 가까이 있을 때 엄마에게 메뉴 말하기'],
+['가족',4,4,'엘리베이터 안에서 다른 사람이 있을 때 가족과 말하기'],
+['가족',4,4,'학교 앞에서 엄마·아빠와 평소 목소리로 말하기'],
+['가족',4,4,'교실 앞 복도에서 엄마·아빠와 이야기하기(방과 후)'],
+['가족',4,5,'빈 교실에서 엄마·아빠와 게임하며 말하기'],
+['가족',4,5,'친구가 옆에 있을 때 엄마·아빠에게 말하기'],
+['가족',4,5,'선생님이 근처에 있을 때 엄마·아빠에게 말하기'],
+['가족',6,5,'가족 모임에서 할머니·할아버지와 2~3마디 나누기'],
+['가족',4,5,'엄마·아빠와 문구점에서 물건 고르며 소리 내 말하기'],
+['가족',4,6,'가족 외식 때 엄마 옆에서 점원에게 "물 주세요" 말하기'],
+['가족',7,6,'가족 모임에서 노래·장기자랑 하기'],
+['소리·놀이',0,1,'고개 끄덕이기·가로젓기로 대답하기'],
+['소리·놀이',0,1,'손 흔들어 인사하기'],
+['소리·놀이',0,1,'엄지 척, 하이파이브로 대답하기'],
+['소리·놀이',0,2,'선생님께 손가락으로 가리켜서 대답하기'],
+['소리·놀이',0,2,'카드(예/아니요)를 들어서 대답하기'],
+['소리·놀이',1,2,'가족 앞에서 동물 흉내 소리 내기'],
+['소리·놀이',1,2,'웃음 참지 않고 소리 내서 웃기'],
+['소리·놀이',1,2,'박수 치며 "와!" 소리 내기'],
+['소리·놀이',1,2,'리코더·호루라기·장난감 피리 불기(다른 사람 앞)'],
+['소리·놀이',1,3,'허밍·휘파람으로 노래하기(다른 사람 앞)'],
+['소리·놀이',1,3,'"음", "응" 같은 짧은 소리로 대답하기'],
+['소리·놀이',1,3,'숨바꼭질에서 "다 숨었다!" 외치기'],
+['소리·놀이',1,3,'공놀이하며 "하나, 둘, 셋" 세기'],
+['소리·놀이',1,3,'풍선 불기·빨대 불기 놀이하며 소리 내기'],
+['소리·놀이',1,4,'친구 앞에서 웃음소리·감탄사("우와!") 내기'],
+['소리·놀이',1,4,'노래 수업에서 다 같이 부를 때 작게 따라 부르기'],
+['소리·놀이',1,4,'다 같이 구호 외칠 때 따라 하기'],
+['소리·놀이',1,4,'속삭임으로 친구에게 한 단어 말하기'],
+['소리·놀이',1,5,'선생님 앞에서 소리 나는 게임(동물 소리 맞히기) 하기'],
+['소리·놀이',1,5,'반 친구들 앞에서 웃음소리 내기'],
+['소리·놀이',1,5,'체육 시간에 "와!" 응원 소리 내기'],
+['소리·놀이',1,5,'속삭임에서 조금 더 큰 목소리로 한 단어 말하기'],
+['친척·가족 친구',0,2,'친척에게 손 흔들어 인사하기'],
+['친척·가족 친구',0,2,'친척이 주는 선물 받고 고개 숙여 인사하기'],
+['친척·가족 친구',1,3,'친척 앞에서 가족과 놀며 소리 내 웃기'],
+['친척·가족 친구',4,3,'친척이 옆방에 있을 때 가족과 말하기'],
+['친척·가족 친구',3,3,'할머니·할아버지께 "안녕하세요" 인사하기'],
+['친척·가족 친구',3,4,'친척 질문에 "네/아니요"로 대답하기'],
+['친척·가족 친구',3,4,'선물 받고 "고맙습니다" 말하기'],
+['친척·가족 친구',4,4,'친척 사촌과 게임하며 말하기'],
+['친척·가족 친구',4,4,'엄마 친구에게 "안녕하세요" 인사하기'],
+['친척·가족 친구',4,5,'친척이 "몇 학년이야?" 물으면 "3학년이요" 대답하기'],
+['친척·가족 친구',4,5,'엄마 친구 아이와 놀면서 말하기'],
+['친척·가족 친구',4,5,'친척 집에서 "화장실 어디예요?" 묻기'],
+['친척·가족 친구',5,5,'사촌에게 "같이 놀자" 먼저 말하기'],
+['친척·가족 친구',6,5,'할머니·할아버지와 둘이서 대화하기'],
+['친척·가족 친구',6,6,'친척에게 학교생활 이야기해 주기'],
+['친척·가족 친구',6,6,'엄마 친구 집에 가서 엄마 친구와 대화하기'],
+['친척·가족 친구',5,6,'친척 어른께 궁금한 것 질문하기'],
+['친척·가족 친구',6,6,'명절에 친척들이 모인 방에서 말하기'],
+['친척·가족 친구',6,7,'처음 만난 먼 친척과 이야기하기'],
+['친척·가족 친구',7,7,'친척들 앞에서 자기소개하기'],
+['친척·가족 친구',7,7,'가족 모임에서 새해 인사 말하기(여러 사람 앞)'],
+['친척·가족 친구',7,8,'친척들 앞에서 책 읽기·발표하기'],
+['전화·영상',2,2,'할머니·할아버지께 음성 메시지 보내기'],
+['전화·영상',2,2,'영상통화에서 가족에게 손 흔들고 "안녕" 하기'],
+['전화·영상',2,2,'가족 채팅방에 음성 메시지 보내기'],
+['전화·영상',2,3,'엄마·아빠와 전화 통화하기(밖에서)'],
+['전화·영상',2,3,'할머니·할아버지와 영상통화로 한 문장 말하기'],
+['전화·영상',2,3,'녹음한 노래를 친척에게 보내기'],
+['전화·영상',2,3,'친한 친구에게 음성 메시지로 "안녕" 보내기'],
+['전화·영상',2,4,'친구와 영상통화로 인사하기'],
+['전화·영상',2,4,'친구와 전화로 1분 이야기하기'],
+['전화·영상',2,4,'온라인 게임·학습 앱에서 음성으로 대답하기'],
+['전화·영상',2,4,'선생님께 음성 메시지로 인사 보내기'],
+['전화·영상',2,5,'카메라 끈 채 온라인 수업에서 "네" 대답하기'],
+['전화·영상',5,5,'친구에게 전화해서 "놀 수 있어?" 묻기'],
+['전화·영상',2,5,'선생님과 영상통화로 인사하기'],
+['전화·영상',4,5,'엄마 대신 전화 받아 "잠깐만요" 말하기'],
+['전화·영상',4,6,'친척이 전화 오면 받아서 "여보세요" 말하기'],
+['전화·영상',4,6,'온라인 수업에서 카메라 켜고 한 문장 말하기'],
+['전화·영상',5,6,'학원 선생님께 전화로 "오늘 못 가요" 말하기(대본 보고)'],
+['전화·영상',5,7,'가게에 전화해 "문 열었어요?" 묻기'],
+['전화·영상',5,7,'음식 배달 주문 전화하기(엄마 옆에서)'],
+['전화·영상',6,7,'잘 모르는 어른과 전화 통화하기'],
+['전화·영상',6,8,'여러 명이 함께하는 영상통화에서 말하기'],
+['친구',0,2,'친구에게 손 흔들어 인사하기'],
+['친구',1,2,'친구와 놀며 소리 내 웃기'],
+['친구',2,3,'친구와 집에서 게임하며 한 단어 말하기(엄마 옆에서)'],
+['친구',4,3,'친한 친구 1명을 집에 초대해서 놀며 말하기'],
+['친구',4,3,'친한 친구와 둘이 집에서 역할 놀이하기'],
+['친구',3,4,'친구 부름에 "응" 대답하기'],
+['친구',4,4,'친한 친구와 놀이터에서 말하기'],
+['친구',4,4,'친한 친구와 걸어가며 이야기하기'],
+['친구',5,4,'친한 친구에게 "뭐 하고 놀까?" 묻기'],
+['친구',4,5,'친구 엄마가 있을 때 친구와 말하기'],
+['친구',4,5,'친구 집에 놀러 가서 친구와 말하기'],
+['친구',6,5,'친구와 전화나 영상으로 약속 정하기'],
+['친구',5,5,'친구에게 좋아하는 것 물어보기'],
+['친구',6,6,'친구 2명과 함께 놀며 말하기'],
+['친구',5,6,'친구 부모님께 "안녕하세요" 인사하기'],
+['친구',6,6,'친구에게 내 생각을 말하기("나는 이게 좋아")'],
+['친구',6,6,'친구에게 "싫어" "그만해" 말하기'],
+['친구',6,6,'친구와 싸우거나 속상할 때 말로 표현하기'],
+['친구',5,7,'새 친구에게 "같이 놀래?" 먼저 말하기'],
+['친구',6,7,'친구 3~4명과 게임하며 대화하기'],
+['친구',6,7,'친구 생일파티에서 친구들과 말하기'],
+['친구',6,7,'잘 모르는 반 친구와 이야기하기'],
+['친구',6,8,'친구들에게 재미있는 이야기 들려주기'],
+['친구',7,8,'생일파티에서 친구들 앞에서 "고마워" 말하기'],
+['친구',7,9,'여러 친구들 앞에서 놀이 규칙 설명하기'],
+['친구',6,9,'오랫동안 말하지 않았던 친구에게 처음 말하기'],
+['놀이터·공원',0,1,'놀이터에서 다른 아이 옆에서 놀기'],
+['놀이터·공원',0,2,'놀이터에서 모르는 아이에게 손 흔들기'],
+['놀이터·공원',1,2,'놀이터에서 소리 내 웃으며 놀기'],
+['놀이터·공원',1,3,'미끄럼틀 탈 때 "야호!" 외치기'],
+['놀이터·공원',4,3,'놀이터에서 엄마·아빠 부르기'],
+['놀이터·공원',4,4,'놀이터에서 가족과 크게 말하며 놀기'],
+['놀이터·공원',3,4,'"비켜 줄래?" 대신 "잠깐만" 한 마디 하기'],
+['놀이터·공원',3,4,'모르는 아이 질문에 "응/아니" 대답하기'],
+['놀이터·공원',4,5,'"나도 해도 돼?" 말하기'],
+['놀이터·공원',4,5,'그네 기다릴 때 "다음에 나 타도 돼?" 말하기'],
+['놀이터·공원',5,5,'모르는 아이에게 "몇 살이야?" 묻기'],
+['놀이터·공원',5,6,'모르는 아이에게 "같이 놀자" 말하기'],
+['놀이터·공원',6,6,'놀이터에서 만난 아이와 술래잡기하며 말하기'],
+['놀이터·공원',5,6,'공원 매점에서 아이스크림 사기'],
+['놀이터·공원',6,7,'모르는 아이들 무리에 끼어서 놀기'],
+['놀이터·공원',6,7,'공원 행사에서 진행자 질문에 대답하기'],
+['놀이터·공원',5,7,'길 잃었을 때를 가정해 어른에게 도움 요청 연습하기'],
+['놀이터·공원',7,8,'공원 행사에서 여러 사람 앞에서 말하기'],
+['가게',0,2,'가게 주인에게 눈 맞추고 고개 숙여 인사하기'],
+['가게',0,2,'계산할 때 돈을 직접 건네기(말 없이)'],
+['가게',0,3,'엄마 옆에서 점원에게 물건 직접 건네기'],
+['가게',3,3,'계산 후 "고맙습니다" 말하기'],
+['가게',3,3,'점원 질문에 고개 대신 "네" 대답하기'],
+['가게',3,4,'"봉투 필요해요?"에 "네/아니요" 대답하기'],
+['가게',3,4,'문구점에서 "안녕하세요" 인사하기'],
+['가게',4,4,'엄마와 함께 계산대에서 "이거요" 말하기'],
+['가게',4,5,'문구점에서 "이거 주세요" 말하기'],
+['가게',4,5,'편의점에서 과자 사며 "이거요" 말하기'],
+['가게',4,5,'빵집에서 "이거 주세요" 말하기'],
+['가게',4,5,'아이스크림 가게에서 맛 고르기("딸기요")'],
+['가게',5,5,'문구점에서 "○○ 있어요?" 묻기'],
+['가게',5,6,'"이거 얼마예요?" 묻기'],
+['가게',4,6,'엄마가 가게 밖에서 기다리는 동안 혼자 계산하기'],
+['가게',5,6,'마트 직원에게 "○○ 어디 있어요?" 묻기'],
+['가게',4,6,'장난감 가게에서 "이거 볼 수 있어요?" 말하기'],
+['가게',5,6,'편의점에서 "이거 데워 주세요" 말하기'],
+['가게',6,7,'엄마 없이 혼자 가게에 가서 물건 사 오기'],
+['가게',6,7,'잘못 받은 거스름돈에 대해 말하기'],
+['가게',6,7,'가게 주인과 짧게 이야기 나누기'],
+['가게',6,7,'친구 선물 고를 때 점원에게 추천 물어보기'],
+['가게',6,8,'물건 교환하러 가서 이유 말하기'],
+['가게',7,8,'줄 서 있는 사람들 앞에서 크게 주문하기'],
+['식당·카페',0,2,'식당에서 메뉴판 보고 손가락으로 가리키기'],
+['식당·카페',0,2,'식당 직원에게 고개 숙여 인사하기'],
+['식당·카페',1,3,'식당에서 가족과 소리 내 웃기'],
+['식당·카페',4,3,'메뉴를 엄마에게 말하기(직원 멀리 있을 때)'],
+['식당·카페',3,4,'"맛있게 드세요"에 "네" 대답하기'],
+['식당·카페',3,4,'"맛있었어요" "감사합니다" 인사하기'],
+['식당·카페',4,5,'키즈카페 입구에서 "안녕하세요" 인사하기'],
+['식당·카페',4,5,'직원에게 "물 주세요" 말하기'],
+['식당·카페',4,5,'내 음식은 내가 주문하기("짜장면이요")'],
+['식당·카페',4,5,'패스트푸드점에서 "감자튀김 주세요" 말하기'],
+['식당·카페',4,6,'카페에서 내 음료 주문하기'],
+['식당·카페',5,6,'"화장실 어디예요?" 묻기'],
+['식당·카페',4,6,'"포크 주세요" "숟가락 주세요" 요청하기'],
+['식당·카페',4,6,'음식이 뜨거울 때 "앞접시 주세요" 말하기'],
+['식당·카페',6,6,'가족 전체 메뉴를 대표로 주문하기'],
+['식당·카페',5,7,'직원에게 "이거 매워요?" 묻기'],
+['식당·카페',6,7,'주문이 잘못 나오면 "이거 안 시켰어요" 말하기'],
+['식당·카페',6,7,'키즈카페 직원에게 놀이 기구 사용법 묻기'],
+['식당·카페',6,8,'모르는 아이들과 키즈카페에서 놀며 말하기'],
+['식당·카페',7,8,'생일 식당에서 여러 사람 앞에서 소원 말하기'],
+['학교: 선생님',0,2,'선생님께 눈 맞추고 고개 숙여 인사하기'],
+['학교: 선생님',0,3,'선생님 질문에 고개로 대답하기'],
+['학교: 선생님',2,3,'녹음한 책 읽기를 선생님께 제출하기'],
+['학교: 선생님',2,3,'녹음한 인사말을 선생님이 교실에서 들어 보기'],
+['학교: 선생님',4,4,'방과 후 빈 교실에서 엄마와 말하기(선생님은 교실 밖)'],
+['학교: 선생님',4,4,'선생님이 문 밖에 있을 때 엄마와 게임하며 말하기'],
+['학교: 선생님',4,5,'선생님이 교실 구석에 있을 때 엄마와 말하기'],
+['학교: 선생님',4,5,'선생님이 점점 가까이 올 때 엄마와 계속 말하기'],
+['학교: 선생님',3,5,'엄마·아빠 옆에서 선생님께 "네" 대답하기'],
+['학교: 선생님',3,5,'선생님과 게임하며 한 단어 말하기(엄마 옆에서)'],
+['학교: 선생님',3,5,'선생님과 단둘이 "네/아니요" 대답하기'],
+['학교: 선생님',3,5,'선생님께 "안녕하세요" 인사하기'],
+['학교: 선생님',3,6,'출석 부를 때 "네" 대답하기'],
+['학교: 선생님',3,6,'선택 질문("빨강? 파랑?")에 한 단어로 대답하기'],
+['학교: 선생님',4,6,'선생님께 "화장실 다녀올게요" 말하기'],
+['학교: 선생님',4,6,'보건실에서 "배가 아파요" 말하기'],
+['학교: 선생님',4,6,'선생님께 짧은 문장으로 대답하기'],
+['학교: 선생님',5,7,'선생님께 모르는 것 질문하기'],
+['학교: 선생님',6,7,'선생님과 단둘이 2~3마디 이야기하기'],
+['학교: 선생님',4,7,'급식실에서 "조금만 주세요/더 주세요" 말하기'],
+['학교: 선생님',4,7,'다른 반 선생님께 인사하기'],
+['학교: 선생님',6,7,'선생님께 내 기분 말하기("속상해요")'],
+['학교: 선생님',6,8,'선생님께 친구 문제 말하기'],
+['학교: 선생님',6,8,'교무실에 가서 선생님께 심부름 말 전하기'],
+['학교: 선생님',6,8,'교장·교감 선생님께 인사하고 대답하기'],
+['학교: 선생님',6,9,'새 학년 새 선생님께 처음 말하기'],
+['학교: 교실·친구들',0,2,'교실에서 친구와 눈 맞추고 웃기'],
+['학교: 교실·친구들',1,3,'교실에서 친구와 소리 내 웃기'],
+['학교: 교실·친구들',1,4,'쉬는 시간에 친구와 소리 나는 게임하기'],
+['학교: 교실·친구들',3,4,'쉬는 시간에 친한 친구에게 속삭이기'],
+['학교: 교실·친구들',3,5,'친한 친구에게 교실에서 "응" 대답하기'],
+['학교: 교실·친구들',3,5,'친한 친구에게 교실에서 평소 목소리로 한 단어 말하기'],
+['학교: 교실·친구들',4,5,'짝꿍에게 "지우개 빌려줘" 말하기'],
+['학교: 교실·친구들',4,6,'쉬는 시간에 친한 친구와 이야기하기'],
+['학교: 교실·친구들',4,6,'모둠 활동에서 친구에게 한 문장 말하기'],
+['학교: 교실·친구들',4,6,'급식 시간에 옆 친구와 말하기'],
+['학교: 교실·친구들',5,6,'반 친구에게 "같이 놀자" 말하기'],
+['학교: 교실·친구들',5,6,'친구에게 숙제·준비물 물어보기'],
+['학교: 교실·친구들',6,7,'모둠 활동에서 내 의견 말하기'],
+['학교: 교실·친구들',6,7,'체육 시간에 팀 친구에게 "여기!" 외치기'],
+['학교: 교실·친구들',4,7,'다 같이 소리 내 읽기에서 따라 읽기'],
+['학교: 교실·친구들',3,7,'수업 중 선생님 질문에 한 단어로 대답하기'],
+['학교: 교실·친구들',6,7,'쉬는 시간에 잘 모르는 반 친구와 이야기하기'],
+['학교: 교실·친구들',4,8,'손들고 대답하기'],
+['학교: 교실·친구들',4,8,'짝꿍과 함께 반 앞에서 한 문장 읽기'],
+['학교: 교실·친구들',4,8,'교과서 한 문장 혼자 소리 내 읽기(반 전체 앞)'],
+['학교: 교실·친구들',7,8,'모둠 발표에서 내 부분 한 문장 말하기'],
+['학교: 교실·친구들',7,9,'반 친구들 앞에서 자기소개하기'],
+['학교: 교실·친구들',7,9,'반 친구들 앞에서 발표하기'],
+['학교: 교실·친구들',7,9,'학급 회의에서 의견 말하기'],
+['학교: 교실·친구들',7,10,'학예회·발표회 무대에서 말하기'],
+['학교: 교실·친구들',7,10,'전교생 앞에서 상 받고 한마디 하기'],
+['학원·방과후·운동',0,1,'새 학원·수업에 가서 앉아 있기만 하기'],
+['학원·방과후·운동',0,2,'학원 선생님께 고개 숙여 인사하기'],
+['학원·방과후·운동',1,3,'태권도·줄넘기에서 구령 소리 따라 내기'],
+['학원·방과후·운동',1,3,'수영장에서 물놀이하며 소리 내 웃기'],
+['학원·방과후·운동',2,3,'피아노 연습 녹음해서 선생님께 보내기'],
+['학원·방과후·운동',3,4,'학원 출석 때 "네" 대답하기'],
+['학원·방과후·운동',3,4,'학원 선생님께 "안녕하세요/안녕히 계세요" 인사하기'],
+['학원·방과후·운동',1,4,'태권도에서 "얍!" 기합 넣기'],
+['학원·방과후·운동',3,5,'학원 선생님 질문에 한 단어로 대답하기'],
+['학원·방과후·운동',4,5,'학원 차 기사님께 "안녕하세요" 인사하기'],
+['학원·방과후·운동',4,5,'방과후 수업 선생님께 "다 했어요" 말하기'],
+['학원·방과후·운동',4,5,'수영 선생님께 "무서워요" 말하기'],
+['학원·방과후·운동',5,6,'학원 선생님께 모르는 문제 질문하기'],
+['학원·방과후·운동',4,6,'미술 학원에서 "색연필 주세요" 말하기'],
+['학원·방과후·운동',5,6,'학원 친구에게 "이름이 뭐야?" 묻기'],
+['학원·방과후·운동',6,6,'학원 쉬는 시간에 친구와 이야기하기'],
+['학원·방과후·운동',6,7,'축구·피구 팀 친구에게 "패스!" 외치기'],
+['학원·방과후·운동',6,7,'학원에서 내 생각 말하기'],
+['학원·방과후·운동',6,7,'새로 온 학원 친구에게 먼저 인사하기'],
+['학원·방과후·운동',7,8,'학원 친구들 앞에서 책 읽기'],
+['학원·방과후·운동',7,8,'방과후 수업에서 자기소개하기'],
+['학원·방과후·운동',7,9,'피아노·태권도 발표회에서 인사말 하기'],
+['학원·방과후·운동',7,9,'캠프·체험 활동에서 여러 친구 앞에서 말하기'],
+['학원·방과후·운동',7,10,'대회·공연 무대에서 말하거나 노래하기'],
+['병원·도서관·공공장소',0,1,'병원 대기실에서 엄마 옆에 앉아 기다리기'],
+['병원·도서관·공공장소',0,2,'이름 불리면 손들기'],
+['병원·도서관·공공장소',0,2,'엘리베이터에서 이웃에게 고개 숙여 인사하기'],
+['병원·도서관·공공장소',0,2,'경비 아저씨께 손 흔들어 인사하기'],
+['병원·도서관·공공장소',0,2,'의사 선생님 질문에 고개로 대답하기'],
+['병원·도서관·공공장소',1,3,'진료 때 "아~" 소리 내기'],
+['병원·도서관·공공장소',3,4,'이름 불리면 "네" 대답하기'],
+['병원·도서관·공공장소',3,4,'이웃 인사에 "안녕하세요" 대답하기'],
+['병원·도서관·공공장소',3,4,'택배 아저씨께 "감사합니다" 말하기'],
+['병원·도서관·공공장소',4,4,'버스 기사님께 "안녕하세요" 인사하기'],
+['병원·도서관·공공장소',3,5,'의사 선생님 질문에 "네/아니요" 대답하기'],
+['병원·도서관·공공장소',4,5,'의사 선생님께 "여기 아파요" 말하기'],
+['병원·도서관·공공장소',4,5,'치과에서 "아파요" 말하기'],
+['병원·도서관·공공장소',4,5,'도서관에서 사서 선생님께 "빌려 갈게요" 말하기'],
+['병원·도서관·공공장소',4,5,'미용실에서 "짧게요/조금만요" 말하기'],
+['병원·도서관·공공장소',4,6,'엘리베이터에서 "몇 층이에요?"에 대답하기'],
+['병원·도서관·공공장소',5,6,'도서관에서 "○○ 책 어디 있어요?" 묻기'],
+['병원·도서관·공공장소',5,6,'약국에서 약사님께 "이거 어떻게 먹어요?" 묻기'],
+['병원·도서관·공공장소',4,6,'박물관·체험관 직원에게 표 내며 "어린이 한 명이요" 말하기'],
+['병원·도서관·공공장소',6,7,'이웃 어른과 엘리베이터에서 짧게 이야기하기'],
+['병원·도서관·공공장소',5,7,'놀이공원 직원에게 "이거 타도 돼요?" 묻기'],
+['병원·도서관·공공장소',6,7,'의사 선생님께 아픈 곳 자세히 설명하기'],
+['병원·도서관·공공장소',5,7,'길을 잃었을 때 어른에게 도움 요청하기(연습)'],
+['병원·도서관·공공장소',6,8,'도서관 책 읽어 주기 시간에 질문에 대답하기'],
+['병원·도서관·공공장소',6,8,'체험 학습에서 안내하는 선생님께 질문하기'],
+['병원·도서관·공공장소',7,9,'도서관·체험관 행사에서 여러 사람 앞에서 말하기'],
+];
+
+const LEVELS = ['비언어 소통','소리 내기','녹음/비대면','한 단어','짧은 문장','질문/대화 시작','대화 이어가기','여러 사람 앞'];
+// 상황은 쉬운 곳 → 어려운 곳 순서 (예시 과제의 평균 예상 불안 기준)
+const CATS = ['집/혼자', '소리·놀이', '가족', '전화·영상', '놀이터·공원', '친척·가족 친구', '병원·도서관·공공장소', '가게', '식당·카페', '친구', '학원·방과후·운동', '학교: 선생님', '학교: 교실·친구들'];
+const catRank = s => { const i = CATS.indexOf(s.cat); return i < 0 ? CATS.length : i; };
+const byEasy = (a, b) => a.suds - b.suds || catRank(a) - catRank(b);
+// 화면 목록과 인쇄에 쓰는 순서: 상황별이면 상황(쉬운 곳 → 어려운 곳)으로 묶고 그 안에서 난이도 방향 적용
+function orderSteps(list) {
+  const dir = $('sortDir').value === 'desc' ? -1 : 1;
+  if ($('sortMode').value === 'cat') return list.sort((a, b) => catRank(a) - catRank(b) || (a.cat || '').localeCompare(b.cat || '') || dir * (a.suds - b.suds));
+  return list.sort((a, b) => dir * byEasy(a, b));
+}
+const exampleSteps = () => EXAMPLES.map(([cat, lv, suds, text], i) => ({ id: 'ex' + i, text, cat, level: LEVELS[lv], suds }));
+if (!state.seeded) { if (!state.steps.length) state.steps = exampleSteps(); state.seeded = true; state.exCount = EXAMPLES.length; save(); }
+else if ((state.exCount || 100) < EXAMPLES.length) {  // 예시가 늘어난 버전: 새 예시만 추가 (지운 예시는 되살리지 않음)
+  state.steps.push(...exampleSteps().slice(state.exCount || 100)); state.exCount = EXAMPLES.length; save();
+}
+const DIFFS = { '전체': [0, 10], '쉬움 (0–3)': [0, 3], '보통 (4–6)': [4, 6], '어려움 (7–10)': [7, 10] };
+function visibleSteps() {
+  const f = $('catFilter').value || '전체', [lo, hi] = DIFFS[$('diffFilter').value] || [0, 10];
+  return state.steps.filter(s => (f === '전체' || (s.cat || '나만의 과제') === f) && s.suds >= lo && s.suds <= hi);
+}
+const selected = new Set();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+const $ = id => document.getElementById(id);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => new Date().toISOString().slice(0, 10);
+
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.setAttribute('aria-selected', x === b));
+  document.querySelectorAll('main > section').forEach(s => s.hidden = s.id !== 'tab-' + b.dataset.tab);
+  if (b.dataset.tab === 'progress') renderChart();
+});
+['stepSuds', 'logBefore', 'logAfter'].forEach(id => {
+  $(id).oninput = () => $(id + 'Out').textContent = $(id).value;
+});
+
+function logsFor(stepId) { return state.logs.filter(l => l.stepId === stepId); }
+function isMastered(step) {
+  const ls = logsFor(step.id).filter(l => l.result !== 'none');
+  if (ls.length < 3) return false;
+  const first = ls[ls.length - 1].before;  // logs are stored newest first
+  return ls[0].before <= Math.max(1, first / 2);
+}
+
+function renderLadder() {
+  const cats = [...new Set([...CATS, ...state.steps.map(s => s.cat || '나만의 과제')])];
+  const f = $('catFilter').value || '전체';
+  $('catFilter').innerHTML = ['전체', ...cats].map(c => `<option value="${esc(c)}" ${c === f ? 'selected' : ''}>${c === '전체' ? '상황 전체 (쉬운 순)' : (CATS.includes(c) ? CATS.indexOf(c) + 1 + '. ' : '') + esc(c)}</option>`).join('');
+  $('stepCat').innerHTML = [...cats.filter(c => c !== '나만의 과제'), '나만의 과제'].map(c => `<option ${c === '나만의 과제' ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  const all = [...state.steps].sort(byEasy);
+  const d = $('diffFilter').value || '전체';
+  $('diffFilter').innerHTML = Object.keys(DIFFS).map(k => `<option value="${k}" ${k === d ? 'selected' : ''}>${k === '전체' ? '난이도 전체' : k}</option>`).join('');
+  const steps = orderSteps(visibleSteps());
+  $('ladderCount').textContent = `표시 ${steps.length}개 / 전체 ${state.steps.length}개`;
+  $('selCount').textContent = selected.size;
+  const next = all.find(s => !isMastered(s) && s.suds >= 3) || all.find(s => !isMastered(s));
+  $('ladderList').innerHTML = steps.length ? steps.map(s => {
+    const n = logsFor(s.id).length, m = isMastered(s);
+    return `<li><input type="checkbox" data-sel="${s.id}" ${selected.has(s.id) ? 'checked' : ''} aria-label="선택">
+      <button class="badge" style="border:0;cursor:pointer" data-suds="${s.id}" title="예상 불안 수정">${s.suds}</button>
+      <div class="grow"><div class="${m ? 'done' : ''}">${esc(s.text)}</div>
+      <div class="meta"><span class="cat">${esc(s.cat || '나만의 과제')}</span>${esc(s.level)} · 연습 ${n}회${m ? ' · ✓ 익숙해짐' : s === next ? ' · 👉 지금 연습할 단계' : ''}</div></div>
+      <button class="ghost" data-del-step="${s.id}" aria-label="삭제">✕</button></li>`;
+  }).join('') : '<li class="empty">과제가 없습니다. 위에서 직접 추가하거나 [예시 다시 넣기]를 눌러 보세요.</li>';
+  $('logStep').innerHTML = all.map(s => `<option value="${s.id}" ${s === next ? 'selected' : ''}>[${s.suds}] ${esc(s.text)}</option>`).join('')
+    || '<option value="">먼저 불안 사다리에 과제를 추가하세요</option>';
+}
+function removeSteps(ids) {
+  state.steps = state.steps.filter(s => !ids.has(s.id));
+  ids.forEach(id => selected.delete(id)); save(); renderAll();
+}
+$('ladderList').onclick = e => {
+  const d = e.target.dataset;
+  if (d.delStep) removeSteps(new Set([d.delStep]));  // 한 개 삭제는 바로 (예시를 빠르게 정리할 수 있도록)
+  if (d.sel) { e.target.checked ? selected.add(d.sel) : selected.delete(d.sel); $('selCount').textContent = selected.size; }
+  if (d.suds) {
+    const s = state.steps.find(x => x.id === d.suds);
+    const v = prompt(`"${s.text}"\n예상 불안 (0–10)`, s.suds);
+    if (v !== null && v.trim() !== '' && +v >= 0 && +v <= 10) { s.suds = Math.round(+v); save(); renderAll(); }
+  }
+};
+$('catFilter').onchange = $('diffFilter').onchange = renderLadder;
+try { const o = JSON.parse(localStorage.getItem(KEY + '-sort')); if (o) { $('sortMode').value = o.mode; $('sortDir').value = o.dir; } } catch (e) {}
+$('sortMode').onchange = $('sortDir').onchange = () => {
+  try { localStorage.setItem(KEY + '-sort', JSON.stringify({ mode: $('sortMode').value, dir: $('sortDir').value })); } catch (e) {}
+  renderLadder();
+};
+$('selectAll').onclick = () => { document.querySelectorAll('[data-sel]').forEach(c => selected.add(c.dataset.sel)); renderLadder(); };
+$('clearSel').onclick = () => { selected.clear(); renderLadder(); };
+$('deleteSel').onclick = () => {
+  if (selected.size && confirm(`선택한 ${selected.size}개 과제를 삭제할까요? (연습 기록은 유지됩니다)`)) removeSteps(new Set(selected));
+};
+$('deleteAll').onclick = () => {
+  if (state.steps.length && confirm('사다리의 모든 과제를 삭제할까요? (연습 기록은 유지됩니다)')) removeSteps(new Set(state.steps.map(s => s.id)));
+};
+$('restoreEx').onclick = () => {
+  const have = new Set(state.steps.map(s => s.id));
+  const missing = exampleSteps().filter(s => !have.has(s.id));
+  if (!missing.length) return alert('예시 과제가 모두 들어 있습니다.');
+  if (confirm(`삭제했던 예시 ${missing.length}개를 다시 넣을까요?`)) { state.steps.push(...missing); save(); renderAll(); }
+};
+$('addStep').onclick = () => {
+  const text = $('stepText').value.trim();
+  if (!text) return $('stepText').focus();
+  state.steps.push({ id: uid(), text, cat: $('stepCat').value, level: $('stepLevel').value, suds: +$('stepSuds').value });
+  $('stepText').value = ''; save(); renderAll();
+};
+
+const RESULT = { full: '완전히 해냄', partial: '일부 해냄', none: '다음에 다시' };
+function stepName(id) { const s = state.steps.find(x => x.id === id); return s ? s.text : '(삭제된 과제)'; }
+function renderLogs() {
+  $('logTable').innerHTML = state.logs.length ? state.logs.slice(0, 50).map(l => `<tr>
+    <td>${esc(l.date)}</td><td>${esc(stepName(l.stepId))}</td><td>${l.before} → ${l.after}</td>
+    <td>${RESULT[l.result]}</td><td>${esc(l.reflect)}</td>
+    <td><button class="ghost" data-del-log="${l.id}" aria-label="삭제">✕</button></td></tr>`).join('')
+    : '<tr><td colspan="6" class="empty">아직 기록이 없습니다.</td></tr>';
+}
+$('logTable').onclick = e => {
+  const id = e.target.dataset.delLog;
+  if (id && confirm('이 기록을 삭제할까요?')) { state.logs = state.logs.filter(l => l.id !== id); save(); renderAll(); }
+};
+$('addLog').onclick = () => {
+  if (!$('logStep').value) return alert('먼저 불안 사다리에 과제를 추가하세요.');
+  const l = { id: uid(), date: today(), stepId: $('logStep').value, predict: $('logPredict').value.trim(),
+    before: +$('logBefore').value, after: +$('logAfter').value, result: $('logResult').value,
+    reflect: $('logReflect').value.trim(), reward: $('logReward').value.trim() };
+  state.logs.unshift(l);
+  ['logPredict', 'logReflect', 'logReward'].forEach(id => $(id).value = '');
+  save(); renderAll();
+  alert(l.result === 'none'
+    ? '시도한 것 자체가 한 걸음입니다. 과제를 더 작게 나누거나 한 단계 낮춰서 다시 해 보세요.'
+    : '잘했어요! 불안했지만 해냈습니다.' + (l.reward ? ` 약속한 보상(${l.reward})을 꼭 챙기세요.` : ''));
+};
+
+function renderThoughts() {
+  $('thoughtList').innerHTML = state.thoughts.length ? state.thoughts.map(t => `
+    <div style="border-bottom:1px solid var(--line);padding:10px 0">
+      <div class="meta">${esc(t.date)} · ${esc(t.situation)} · ${esc(t.trap)}</div>
+      <div>💭 ${esc(t.auto)}</div><div>🌱 ${esc(t.balanced)}</div>
+      <button class="ghost" data-del-th="${t.id}">삭제</button></div>`).join('')
+    : '<p class="empty">아직 기록이 없습니다.</p>';
+}
+$('thoughtList').onclick = e => {
+  const id = e.target.dataset.delTh;
+  if (id && confirm('삭제할까요?')) { state.thoughts = state.thoughts.filter(t => t.id !== id); save(); renderThoughts(); }
+};
+$('addThought').onclick = () => {
+  if (!$('thAuto').value.trim()) return $('thAuto').focus();
+  state.thoughts.unshift({ id: uid(), date: today(), situation: $('thSituation').value.trim(), auto: $('thAuto').value.trim(),
+    trap: $('thTrap').value, for: $('thFor').value.trim(), against: $('thAgainst').value.trim(), balanced: $('thBalanced').value.trim() });
+  ['thSituation', 'thAuto', 'thFor', 'thAgainst', 'thBalanced'].forEach(id => $(id).value = '');
+  save(); renderThoughts();
+};
+
+function renderChart() {
+  const logs = [...state.logs].reverse();
+  if (logs.length < 2) { $('chart').innerHTML = '<p class="empty">기록이 2개 이상 쌓이면 그래프가 표시됩니다.</p>'; $('summary').textContent = ''; return; }
+  const W = 800, H = 240, P = 30, x = i => P + i * (W - 2 * P) / (logs.length - 1), y = v => H - P - v * (H - 2 * P) / 10;
+  const line = k => logs.map((l, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(l[k]).toFixed(1)}`).join('');
+  const grid = [0, 5, 10].map(v => `<line x1="${P}" x2="${W - P}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="4" y="${y(v) + 4}">${v}</text>`).join('');
+  $('chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="연습 전후 불안 변화">${grid}
+    <path d="${line('before')}" fill="none" stroke="var(--warn)" stroke-width="2"/>
+    <path d="${line('after')}" fill="none" stroke="var(--accent)" stroke-width="2"/>
+    <text x="${W - P - 150}" y="16" style="fill:var(--warn)">● 연습 전</text><text x="${W - P - 70}" y="16" style="fill:var(--accent)">● 연습 후</text></svg>`;
+  const avg = a => (a.reduce((s, v) => s + v, 0) / a.length).toFixed(1);
+  const mastered = state.steps.filter(isMastered).length;
+  $('summary').textContent = `총 ${logs.length}회 연습 · 평균 불안 ${avg(logs.map(l => l.before))} → ${avg(logs.map(l => l.after))} · 익숙해진 과제 ${mastered}/${state.steps.length}개`;
+}
+
+$('exportBtn').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }));
+  a.download = `child-speaking-practice-${today()}.json`; a.click();
+};
+$('importFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => {
+    const s = JSON.parse(t);
+    if (!Array.isArray(s.steps) || !Array.isArray(s.logs)) throw new Error();
+    if (confirm('현재 기록을 가져온 파일로 바꿀까요?')) { state = { steps: s.steps, logs: s.logs, thoughts: s.thoughts || [], seeded: true, exCount: EXAMPLES.length }; save(); renderAll(); renderChart(); }
+  }).catch(() => alert('올바른 파일이 아닙니다.'));
+};
+
+$('printLadder').onclick = () => {
+  const f = $('catFilter').value || '전체', d = $('diffFilter').value || '전체';
+  const byCat = $('sortMode').value === 'cat', desc = $('sortDir').value === 'desc';
+  const steps = orderSteps(visibleSteps());
+  const label = [f, d].filter(x => x !== '전체').join(' · ');
+  if (!steps.length) return alert('인쇄할 과제가 없습니다.');
+  const diffBand = x => x.suds >= 7 ? '어려움 (예상 불안 7–10)' : x.suds >= 4 ? '보통 (예상 불안 4–6)' : '쉬움 (예상 불안 0–3)';
+  const catName = x => x.cat || '나만의 과제';
+  const group = byCat ? catName : diffBand;
+  let n = 0;
+  const rows = steps.map((s, i) => {
+    const g = group(s), head = !i || group(steps[i - 1]) !== g;
+    if (head && byCat) n = 0;  // 상황별이면 상황마다 순서를 1부터
+    const title = byCat ? `${CATS.includes(g) ? CATS.indexOf(g) + 1 + '. ' : ''}${esc(g)}` : g;
+    return (head ? `<tr class="band"><td colspan="7">${title} · ${steps.filter(x => group(x) === g).length}개</td></tr>` : '') +
+      `<tr><td class="c">${++n}</td><td>${esc(catName(s))}</td><td>${esc(s.text)}</td><td>${esc(s.level)}</td>
+      <td class="c">${s.suds}</td><td>${'□ '.repeat(Math.max(0, 5 - logsFor(s.id).length)).replace(/^/, '☑ '.repeat(Math.min(5, logsFor(s.id).length)))}</td><td class="c">${isMastered(s) ? '☑' : '□'}</td></tr>`;
+  }).join('');
+  const how = (byCat ? '상황별' : '난이도순') + ' · ' + (desc ? '어려운 것부터' : '쉬운 것부터');
+  const tip = desc
+    ? '위로 갈수록 어려운 과제입니다. <b>아래(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 올라가세요.'
+    : '아래로 갈수록 어려운 과제입니다. <b>위(쉬운 것)부터</b> 예상 불안 3~5 과제로 시작해, 불안이 처음의 절반 이하가 될 때까지 반복한 뒤 한 칸씩 내려가세요.';
+  $('printArea').innerHTML = `<h1>우리 아이 용기 사다리${label ? ' · ' + esc(label) : ''}</h1>
+    <div class="pmeta"><span>이름:</span><span>인쇄일: ${today()}</span><span>정렬: ${how}</span></div>
+    <p>${tip}${byCat ? ' 상황은 쉬운 곳부터 차례로 묶여 있으니, 원하는 상황을 골라 연습하세요.' : ''} 연습할 때마다 □에 ✓ 하세요.</p>
+    <table><thead><tr><th style="width:6%">순서</th><th style="width:12%">상황</th><th>말하기 과제</th><th style="width:17%">단계</th><th style="width:8%">예상<br>불안</th><th style="width:15%">연습 (✓)</th><th style="width:7%">완료</th></tr></thead><tbody>
+    ${rows}</tbody></table>`;
+  window.print();
+};
+
+function renderAll() { renderLadder(); renderLogs(); renderThoughts(); }
+renderAll();
+</script>
+</body>
+</html>
